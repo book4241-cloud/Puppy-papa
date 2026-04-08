@@ -1,134 +1,711 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ralph's Real-time Translator</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        select, button.main-btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
-        button.main-btn { background: #004a99; color: white; border: none; font-weight: bold; cursor: pointer; }
-        button.main-btn:active { background: #003366; }
-        .header-box { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .copy-btn { padding: 5px 10px; font-size: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .display { min-height: 100px; padding: 15px; background: #f9f9f9; border-left: 5px solid #004a99; margin-bottom: 20px; white-space: pre-wrap; word-break: break-all; }
-        .status { font-size: 14px; text-align: center; margin-bottom: 10px; font-weight: bold; }
-    </style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1f2e;
+            padding: 16px;
+            color: #e0e6f0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 660px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+```
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #004a99, #0062cc);
+        padding: 18px 22px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .header-icon { font-size: 30px; }
+    .header h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+    .header p  { font-size: 11px; opacity: .7; }
+
+    /* Card */
+    .card {
+        background: #232a3b;
+        border: 1px solid #2e3a52;
+        border-radius: 12px;
+        padding: 18px;
+    }
+    .card-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #7a8eaa;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 12px;
+    }
+
+    /* Status Badge */
+    .status-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .badge-red   { background: #3d1515; color: #ff6b6b; border: 1px solid #6b2020; }
+    .badge-green { background: #0d2e1a; color: #4ade80; border: 1px solid #166534; }
+    .badge-amber { background: #2e1f00; color: #fbbf24; border: 1px solid #92400e; }
+    .badge-blue  { background: #0d1e3d; color: #60a5fa; border: 1px solid #1e3a6e; }
+    .status-detail { font-size: 12px; color: #7a8eaa; margin-top: 6px; }
+
+    /* Mic Section */
+    .mic-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .mic-status-icon { font-size: 24px; }
+    .mic-info { flex: 1; min-width: 140px; }
+    .mic-info strong { font-size: 13px; display: block; margin-bottom: 2px; }
+    .mic-info span   { font-size: 11px; color: #7a8eaa; }
+
+    /* Buttons */
+    .btn {
+        padding: 11px 18px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity .15s, transform .1s;
+        white-space: nowrap;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: #004a99; color: #fff; }
+    .btn-primary:hover { background: #0062cc; }
+    .btn-danger  { background: #c0392b; color: #fff; }
+    .btn-danger:hover { background: #e74c3c; }
+    .btn-success { background: #1a7a4a; color: #fff; }
+    .btn-success:hover { background: #22a05f; }
+    .btn-sm  { padding: 5px 12px; font-size: 11px; border-radius: 6px; }
+    .btn-full { width: 100%; padding: 14px; font-size: 15px; }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* Select */
+    select {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 8px;
+        border: 1px solid #2e3a52;
+        background: #1a1f2e;
+        color: #e0e6f0;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    select:focus { outline: 2px solid #004a99; }
+
+    /* Options grid */
+    .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+    }
+    .option-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+        background: #141820;
+        border-radius: 8px;
+        border: 1px solid #2e3a52;
+        cursor: pointer;
+    }
+    .option-item input[type="checkbox"] {
+        width: 16px; height: 16px;
+        accent-color: #004a99;
+        cursor: pointer;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .option-item label { font-size: 12px; cursor: pointer; line-height: 1.4; }
+
+    /* Display boxes */
+    .display-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .display-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7a8eaa;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+    .display {
+        min-height: 90px;
+        max-height: 240px;
+        overflow-y: auto;
+        padding: 14px;
+        background: #141820;
+        border-left: 4px solid #004a99;
+        border-radius: 0 8px 8px 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #c8d8ee;
+    }
+    .display.translated { border-left-color: #1a7a4a; }
+    .display.ai-box     { border-left-color: #7c3aed; white-space: normal; }
+    .interim { color: #5a7090; font-style: italic; }
+
+    /* AI tags */
+    .speaker-tag {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-right: 4px;
+    }
+    .tag-a { background: #1e3a6e; color: #93c5fd; }
+    .tag-b { background: #1a3d1a; color: #86efac; }
+    .tag-c { background: #3d1a3d; color: #d8b4fe; }
+    .tag-inferred { background: #2e1f00; color: #fbbf24; }
+
+    /* Processing dot */
+    .processing-dot {
+        display: inline-block;
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #fbbf24;
+        animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: .4; transform: scale(.7); }
+    }
+
+    /* Scrollbar */
+    .display::-webkit-scrollbar { width: 4px; }
+    .display::-webkit-scrollbar-track { background: transparent; }
+    .display::-webkit-scrollbar-thumb { background: #2e3a52; border-radius: 4px; }
+</style>
+```
+
 </head>
 <body>
-    <div class="container">
-        <h2>실시간 대화 번역기</h2>
-        <div id="status" class="status" style="color: #d9534f;">🔴 중지됨 (HTTPS 환경 필요)</div>
-        
-        <label for="lang-select">상대방 언어 설정:</label>
-        <select id="lang-select">
-            <option value="en-US">영어 (English)</option>
-            <option value="bn-BD">벵골어 (Bangladesh)</option>
-            <option value="ar-SA">아랍어 (Saudi Arabia)</option>
-            <option value="ur-PK">우르두어 (Pakistan)</option>
-            <option value="tr-TR">터키어 (Turkey)</option>
-        </select>
+<div class="container">
 
-        <button id="toggle-btn" class="main-btn">대화 청취 시작</button>
-
-        <div class="header-box">
-            <h3>들리는 내용 (원문):</h3>
-            <button class="copy-btn" onclick="copyText('transcript')">원문 복사</button>
-        </div>
-        <div id="transcript" class="display"></div>
-
-        <div class="header-box">
-            <h3>한국어 번역 결과:</h3>
-            <button class="copy-btn" onclick="copyText('translated')">번역본 복사</button>
-        </div>
-        <div id="translated" class="display" style="background-color: #eef7ff;"></div>
+```
+<!-- Header -->
+<div class="header">
+    <div class="header-icon">🌐</div>
+    <div>
+        <h1>Ralph's Real-time Translator</h1>
+        <p>다화자 인식 · AI 문장 추론 · 실시간 번역</p>
     </div>
+</div>
 
-    <script>
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        const startBtn = document.getElementById('toggle-btn');
-        const langSelect = document.getElementById('lang-select');
-        const statusDisp = document.getElementById('status');
-        
-        let isListening = false;
-        let fullOriginalText = "";
-        let fullTranslatedText = "";
+<!-- Status Card -->
+<div class="card">
+    <div class="card-title">시스템 상태</div>
+    <div class="status-row">
+        <span id="mic-badge"    class="badge badge-red">🎤 마이크 미허용</span>
+        <span id="listen-badge" class="badge badge-red">🔴 중지됨</span>
+        <span id="ai-badge"     class="badge badge-blue">🤖 AI 대기 중</span>
+    </div>
+    <div id="status-detail" class="status-detail">마이크 권한을 먼저 허용해주세요</div>
+</div>
 
-        recognition.continuous = true;
-        recognition.interimResults = true;
+<!-- Mic Permission Card -->
+<div class="card">
+    <div class="card-title">① 마이크 권한 설정</div>
+    <div class="mic-section">
+        <div class="mic-status-icon" id="mic-icon">🔒</div>
+        <div class="mic-info">
+            <strong id="mic-label">마이크 허용 안됨</strong>
+            <span id="mic-desc">번역을 시작하려면 마이크 접근 권한이 필요합니다</span>
+        </div>
+        <button class="btn btn-primary" id="mic-btn" onclick="requestMicPermission()">마이크 허용</button>
+    </div>
+</div>
 
-        startBtn.onclick = () => {
-            if (!isListening) {
-                recognition.lang = langSelect.value;
-                try { recognition.start(); } catch (e) { console.log("이미 실행 중입니다."); }
-            } else {
-                isListening = false;
-                recognition.stop();
-            }
-        };
+<!-- Language + Options Card -->
+<div class="card">
+    <div class="card-title">② 언어 및 기능 설정</div>
+    <label style="font-size:12px; color:#7a8eaa; display:block; margin-bottom:6px;">상대방 언어 (수동 설정)</label>
+    <select id="lang-select">
+        <option value="auto">🔍 자동 감지 (AI 번역)</option>
+        <option value="en-US">🇺🇸 영어 (English)</option>
+        <option value="bn-BD">🇧🇩 벵골어 (বাংলা)</option>
+        <option value="ar-SA">🇸🇦 아랍어 (العربية)</option>
+        <option value="ur-PK">🇵🇰 우르두어 (اردو)</option>
+        <option value="tr-TR">🇹🇷 터키어 (Türkçe)</option>
+        <option value="zh-CN">🇨🇳 중국어 (普通话)</option>
+        <option value="ja-JP">🇯🇵 일본어 (日本語)</option>
+        <option value="hi-IN">🇮🇳 힌디어 (हिन्दी)</option>
+    </select>
+    <div class="options-grid">
+        <div class="option-item">
+            <input type="checkbox" id="opt-multispeaker" checked>
+            <label for="opt-multispeaker">다화자 자동 구분<br><span style="color:#5a7090">발화자 A/B/C 태깅</span></label>
+        </div>
+        <div class="option-item">
+            <input type="checkbox" id="opt-infer" checked>
+            <label for="opt-infer">비문 AI 추론 보완<br><span style="color:#5a7090">불완전 문장 자동 완성</span></label>
+        </div>
+        <div class="option-item">
+            <input type="checkbox" id="opt-continuous" checked>
+            <label for="opt-continuous">끊김 없는 청취<br><span style="color:#5a7090">자동 재시작</span></label>
+        </div>
+        <div class="option-item">
+            <input type="checkbox" id="opt-show-original" checked>
+            <label for="opt-show-original">원문 표시<br><span style="color:#5a7090">원어 텍스트 유지</span></label>
+        </div>
+    </div>
+</div>
 
-        recognition.onstart = () => {
-            isListening = true;
-            startBtn.innerText = "대화 청취 중지";
-            startBtn.style.background = "#d9534f";
-            statusDisp.innerText = "🟢 실시간 분석 중... (끊김 방지 가동)";
-            statusDisp.style.color = "#5cb85c";
-        };
+<!-- Start/Stop Button -->
+<button class="btn btn-success btn-full" id="toggle-btn" disabled onclick="toggleListening()">
+    🎤 대화 청취 시작
+</button>
 
-        recognition.onend = () => {
-            if (isListening) { recognition.start(); } 
-            else {
-                startBtn.innerText = "대화 청취 시작";
-                startBtn.style.background = "#004a99";
-                statusDisp.innerText = "🔴 중지됨";
-                statusDisp.style.color = "#d9534f";
-            }
-        };
+<!-- Transcript Card -->
+<div class="card">
+    <div class="display-header">
+        <span class="display-label">📝 들리는 내용 (원문)</span>
+        <div style="display:flex;gap:6px;">
+            <button class="btn btn-primary btn-sm" onclick="clearAll()">초기화</button>
+            <button class="btn btn-success btn-sm" onclick="copyText('transcript')">복사</button>
+        </div>
+    </div>
+    <div id="transcript" class="display"></div>
+</div>
 
-        recognition.onresult = (event) => {
-            let interimText = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                const text = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    fullOriginalText += text + " ";
-                    document.getElementById('transcript').innerText = fullOriginalText;
-                    translateText(text, langSelect.value);
-                } else {
-                    interimText += text;
-                    document.getElementById('transcript').innerText = fullOriginalText + interimText;
-                }
-            }
-        };
+<!-- Translated Card -->
+<div class="card">
+    <div class="display-header">
+        <span class="display-label">🇰🇷 한국어 번역</span>
+        <button class="btn btn-success btn-sm" onclick="copyText('translated')">복사</button>
+    </div>
+    <div id="translated" class="display translated"></div>
+</div>
 
-        async function translateText(text, langCode) {
-            const srcLang = langCode.split('-')[0]; // ex) bn-BD -> bn
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${srcLang}|ko`;
-            
+<!-- AI Analysis Card -->
+<div class="card">
+    <div class="display-header">
+        <span class="display-label">🤖 AI 분석 · 정리</span>
+        <span id="ai-processing" style="display:none;align-items:center;gap:5px;">
+            <span class="processing-dot"></span>
+            <span style="font-size:11px;color:#fbbf24;">분석 중...</span>
+        </span>
+    </div>
+    <div id="ai-output" class="display ai-box"></div>
+</div>
+```
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-sonnet-4-20250514";
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let micGranted     = false;
+let isListening    = false;
+let recognition    = null;
+let fullOriginal   = "";
+let fullTranslated = "";
+let aiQueue        = [];
+let isAiProcessing = false;
+let silenceTimer   = null;
+let batchBuffer    = [];
+let restartTimer   = null;
+
+// ═══════════════════════════════════════════════
+// MIC PERMISSION
+// ═══════════════════════════════════════════════
+async function requestMicPermission() {
+    const btn   = document.getElementById('mic-btn');
+    const icon  = document.getElementById('mic-icon');
+    const lbl   = document.getElementById('mic-label');
+    const desc  = document.getElementById('mic-desc');
+    const badge = document.getElementById('mic-badge');
+
+    btn.disabled     = true;
+    btn.textContent  = '요청 중...';
+    icon.textContent = '⏳';
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(t => t.stop()); // Release immediately
+
+        micGranted = true;
+        icon.textContent  = '✅';
+        lbl.textContent   = '마이크 허용됨';
+        desc.textContent  = '마이크 접근이 허용되었습니다. 청취를 시작할 수 있습니다.';
+        badge.textContent = '🎤 마이크 허용됨';
+        badge.className   = 'badge badge-green';
+        btn.textContent   = '✓ 허용됨';
+        btn.style.background = '#1a7a4a';
+        setStatus('마이크 권한 확인 완료. 청취 시작 버튼을 눌러주세요.');
+        document.getElementById('toggle-btn').disabled = false;
+        initRecognition();
+    } catch (err) {
+        icon.textContent  = '❌';
+        lbl.textContent   = '권한 거부됨';
+        desc.textContent  = '브라우저 설정에서 마이크 권한을 허용한 뒤 다시 시도해주세요.';
+        badge.textContent = '🎤 권한 거부됨';
+        badge.className   = 'badge badge-red';
+        btn.textContent   = '다시 시도';
+        btn.disabled      = false;
+        setStatus('마이크 권한이 거부되었습니다. 브라우저 주소창의 🔒 아이콘을 눌러 허용해주세요.');
+    }
+}
+
+// ═══════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════════
+function getLang() {
+    const v = document.getElementById('lang-select').value;
+    // For auto mode, use broad English as base — AI will handle actual language
+    if (v === 'auto') return 'en-US';
+    return v;
+}
+
+function initRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+        setStatus('❌ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.');
+        return;
+    }
+
+    recognition = new SR();
+    recognition.continuous     = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognition.lang           = getLang();
+
+    recognition.onstart = onRecognitionStart;
+    recognition.onend   = onRecognitionEnd;
+    recognition.onerror = onRecognitionError;
+    recognition.onresult = onRecognitionResult;
+}
+
+function onRecognitionStart() {
+    isListening = true;
+    document.getElementById('toggle-btn').textContent  = '⏹ 청취 중지';
+    document.getElementById('toggle-btn').className    = 'btn btn-danger btn-full';
+    document.getElementById('listen-badge').textContent = '🟢 청취 중';
+    document.getElementById('listen-badge').className   = 'badge badge-green';
+    setStatus('실시간 분석 중 — 말소리를 감지하고 있습니다');
+}
+
+function onRecognitionEnd() {
+    if (!isListening) {
+        document.getElementById('toggle-btn').textContent = '🎤 대화 청취 시작';
+        document.getElementById('toggle-btn').className   = 'btn btn-success btn-full';
+        document.getElementById('listen-badge').textContent = '🔴 중지됨';
+        document.getElementById('listen-badge').className   = 'badge badge-red';
+        setStatus('청취가 중지되었습니다');
+        return;
+    }
+    const continuous = document.getElementById('opt-continuous').checked;
+    if (continuous) {
+        // Restart immediately to avoid gaps
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(() => {
+            if (!isListening) return;
             try {
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.responseData && data.responseData.translatedText) {
-                    fullTranslatedText += data.responseData.translatedText + " ";
-                } else {
-                    fullTranslatedText += "[번역불가] ";
-                }
-                document.getElementById('translated').innerText = fullTranslatedText;
-            } catch (error) {
-                fullTranslatedText += "[네트워크오류] ";
-                document.getElementById('translated').innerText = fullTranslatedText;
-            }
-        }
+                recognition.lang = getLang();
+                recognition.start();
+            } catch(e) {}
+        }, 100);
+    }
+}
 
-        function copyText(elementId) {
-            const textToCopy = document.getElementById(elementId).innerText;
-            if(!textToCopy) return;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("복사되었습니다.");
-            }).catch(err => {
-                alert("복사에 실패했습니다: " + err);
-            });
+function onRecognitionError(e) {
+    if (['no-speech', 'aborted', 'audio-capture'].includes(e.error)) return;
+    setStatus(`음성인식 오류: ${e.error}`);
+    // Auto-restart on error if still supposed to be listening
+    if (isListening) {
+        clearTimeout(restartTimer);
+        restartTimer = setTimeout(() => {
+            if (!isListening) return;
+            try { recognition.start(); } catch(e2) {}
+        }, 500);
+    }
+}
+
+function onRecognitionResult(event) {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const res  = event.results[i];
+        const text = res[0].transcript.trim();
+        if (!text) continue;
+
+        if (res.isFinal) {
+            fullOriginal += text + '\n';
+            renderTranscript();
+            batchBuffer.push(text);
+            scheduleBatchProcess();
+
+            // Also do quick translation for non-auto languages
+            const lv = document.getElementById('lang-select').value;
+            if (lv !== 'auto') {
+                quickTranslate(text, lv);
+            }
+        } else {
+            interim = text;
         }
-    </script>
+    }
+    renderTranscript(interim);
+}
+
+function renderTranscript(interim = '') {
+    const el = document.getElementById('transcript');
+    let html = esc(fullOriginal);
+    if (interim) html += `<span class="interim">${esc(interim)}...</span>`;
+    el.innerHTML = html;
+    el.scrollTop = el.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════
+// TOGGLE
+// ═══════════════════════════════════════════════
+function toggleListening() {
+    if (!micGranted) return;
+    if (!isListening) {
+        if (!recognition) initRecognition();
+        recognition.lang = getLang();
+        isListening = true;
+        try { recognition.start(); } catch(e) {}
+    } else {
+        isListening = false;
+        clearTimeout(restartTimer);
+        try { recognition.stop(); } catch(e) {}
+    }
+}
+
+// ═══════════════════════════════════════════════
+// QUICK TRANSLATION (MyMemory — Bengali fixed)
+// ═══════════════════════════════════════════════
+const LANG_MAP = {
+    'bn-BD': 'bn', 'ar-SA': 'ar', 'ur-PK': 'ur',
+    'tr-TR': 'tr', 'en-US': 'en', 'zh-CN': 'zh',
+    'ja-JP': 'ja', 'hi-IN': 'hi',
+};
+
+async function quickTranslate(text, langCode) {
+    const src = LANG_MAP[langCode] || langCode.split('-')[0];
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|ko`;
+    try {
+        const res  = await fetch(url);
+        const data = await res.json();
+        const t    = data.responseData?.translatedText;
+        if (t && !t.includes('MYMEMORY WARNING') && t !== text) {
+            fullTranslated += t + '\n';
+        } else {
+            fullTranslated += `[번역중...]\n`;
+        }
+    } catch(e) {
+        fullTranslated += '[네트워크오류]\n';
+    }
+    const el = document.getElementById('translated');
+    el.textContent = fullTranslated;
+    el.scrollTop   = el.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════
+// AI BATCH PROCESSING
+// ═══════════════════════════════════════════════
+function scheduleBatchProcess() {
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(() => {
+        if (batchBuffer.length > 0) {
+            const batch = batchBuffer.splice(0);
+            runAiAnalysis(batch);
+        }
+    }, 3000); // Send to AI after 3s of no new finals
+}
+
+async function runAiAnalysis(segments) {
+    if (!segments.length) return;
+    setAiProcessing(true);
+
+    const lv       = document.getElementById('lang-select').value;
+    const optMulti = document.getElementById('opt-multispeaker').checked;
+    const optInfer = document.getElementById('opt-infer').checked;
+    const rawText  = segments.join('\n');
+
+    const system = `당신은 실시간 다국어 대화 분석 전문가입니다. 음성인식된 텍스트를 분석하여 다음 작업을 수행하세요:
+
+1. 언어 자동 감지 (벵골어, 아랍어, 영어, 터키어, 우르두어, 한국어 등)
+2. 다화자 구분: 언어 변화, 문맥, 말투로 화자를 추정 (화자A, 화자B, 화자C)
+3. 비문 보완: 음성인식 오류나 불완전 문장을 문맥으로 추론해 완성 (inferred: true 표시)
+4. 한국어 번역: 자연스러운 한국어로 번역
+
+반드시 아래 JSON 형식으로만 응답하세요 (다른 텍스트, 마크다운 없이):
+{"detected_language":"언어명","turns":[{"speaker":"화자A","original":"보완된 원문","inferred":false,"korean":"한국어 번역"}],"summary":"한 줄 요약"}`;
+
+    const user = `음성인식 텍스트:\n${rawText}`;
+
+    try {
+        const res  = await fetch(ANTHROPIC_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: MODEL,
+                max_tokens: 1000,
+                system,
+                messages: [{ role: 'user', content: user }]
+            })
+        });
+        const data = await res.json();
+        const text = data.content?.map(c => c.text || '').join('') || '';
+        const m    = text.match(/\{[\s\S]*\}/);
+        if (m) {
+            const parsed = JSON.parse(m[0]);
+            renderAiResult(parsed, optMulti, optInfer);
+            // Auto mode: use AI for translation too
+            if (lv === 'auto' && parsed.turns) {
+                const lines = parsed.turns.map(t => t.korean).filter(Boolean).join('\n');
+                if (lines) {
+                    fullTranslated += lines + '\n';
+                    const el = document.getElementById('translated');
+                    el.textContent = fullTranslated;
+                    el.scrollTop   = el.scrollHeight;
+                }
+            }
+        } else {
+            appendAiRaw(text);
+        }
+    } catch(err) {
+        appendAiRaw(`[AI 오류] ${err.message}`);
+    }
+
+    setAiProcessing(false);
+}
+
+// ═══════════════════════════════════════════════
+// RENDER AI RESULT
+// ═══════════════════════════════════════════════
+const TAG_CLASS = { '화자A': 'tag-a', '화자B': 'tag-b', '화자C': 'tag-c' };
+
+function renderAiResult(parsed, showMulti, showInfer) {
+    const el = document.getElementById('ai-output');
+    let html = '';
+
+    if (parsed.detected_language) {
+        html += `<div style="font-size:11px;color:#7a8eaahttps://book4241-cloud.github.io/Puppy-papa/;margin-bottom:8px;">🔍 감지 언어: <strong style="color:#fbbf24">${esc(parsed.detected_language)}</strong></div>`;
+    }
+
+    (parsed.turns || []).forEach(turn => {
+        const spk = turn.speaker || '화자A';
+        const tc  = TAG_CLASS[spk] || 'tag-a';
+        html += `<div style="margin-bottom:10px;">`;
+        if (showMulti) html += `<span class="speaker-tag ${tc}">${esc(spk)}</span>`;
+        if (turn.inferred && showInfer) html += `<span class="speaker-tag tag-inferred">🔮 추론</span>`;
+        html += `<br><span style="color:#c8d8ee;">${esc(turn.original || '')}</span>`;
+        html += `<br><span style="color:#86efac;font-size:13px;">→ ${esc(turn.korean || '')}</span>`;
+        html += `</div>`;
+    });
+
+    if (parsed.summary) {
+        html += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #2e3a52;font-size:12px;color:#7a8eaa;">📋 요약: <span style="color:#fbbf24">${esc(parsed.summary)}</span></div>`;
+    }
+
+    el.innerHTML += html;
+    el.scrollTop  = el.scrollHeight;
+    document.getElementById('ai-badge').textContent = '🤖 분석 완료';
+    document.getElementById('ai-badge').className   = 'badge badge-green';
+}
+
+function appendAiRaw(text) {
+    const el = document.getElementById('ai-output');
+    el.textContent += text + '\n';
+    el.scrollTop = el.scrollHeight;
+}
+
+function setAiProcessing(on) {
+    document.getElementById('ai-processing').style.display = on ? 'flex' : 'none';
+    if (on) {
+        document.getElementById('ai-badge').textContent = '🤖 분석 중...';
+        document.getElementById('ai-badge').className   = 'badge badge-amber';
+    }
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function setStatus(msg) { document.getElementById('status-detail').textContent = msg; }
+
+function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function clearAll() {
+    fullOriginal = ''; fullTranslated = ''; batchBuffer = []; aiQueue = [];
+    document.getElementById('transcript').innerHTML   = '';
+    document.getElementById('translated').textContent = '';
+    document.getElementById('ai-output').innerHTML    = '';
+    document.getElementById('ai-badge').textContent   = '🤖 AI 대기 중';
+    document.getElementById('ai-badge').className     = 'badge badge-blue';
+}
+
+function copyText(id) {
+    const el = document.getElementById(id);
+    const t  = (el.innerText || el.textContent).trim();
+    if (!t) return;
+    navigator.clipboard.writeText(t).then(() => alert('복사되었습니다.')).catch(() => alert('복사 실패'));
+}
+
+// ═══════════════════════════════════════════════
+// AUTO-DETECT EXISTING MIC PERMISSION ON LOAD
+// ═══════════════════════════════════════════════
+(async () => {
+    try {
+        const perm = await navigator.permissions.query({ name: 'microphone' });
+        if (perm.state === 'granted') {
+            micGranted = true;
+            document.getElementById('mic-icon').textContent  = '✅';
+            document.getElementById('mic-label').textContent = '마이크 이미 허용됨';
+            document.getElementById('mic-desc').textContent  = '이전에 허용된 마이크 권한이 유효합니다';
+            document.getElementById('mic-badge').textContent = '🎤 마이크 허용됨';
+            document.getElementById('mic-badge').className   = 'badge badge-green';
+            const btn = document.getElementById('mic-btn');
+            btn.textContent   = '✓ 허용됨';
+            btn.style.background = '#1a7a4a';
+            document.getElementById('toggle-btn').disabled   = false;
+            setStatus('마이크 허용됨. 청취 시작 버튼을 눌러주세요.');
+            initRecognition();
+        }
+    } catch(e) { /* permissions API not supported */ }
+})();
+</script>
+
 </body>
 </html>
