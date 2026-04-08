@@ -1,774 +1,202 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ralph's Real-time Translator</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f1218;
-    color: #e0e6f0;
-    padding: 14px;
-    min-height: 100vh;
-}
-.wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Feed Formulator - Ralph (v2026.04)</title>
+    <style>
+        :root { --primary: #3498db; --bg: #f8f9fa; --text: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+        .main-wrapper { display: flex; height: 100vh; }
+        
+        .left-panel { flex: 1.3; padding: 25px; overflow-y: auto; background: white; border-right: 1px solid #e0e0e0; }
+        .right-panel { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
+        
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .remain-box { background: #2c3e50; color: #f1c40f; padding: 12px 25px; border-radius: 8px; font-weight: bold; font-size: 1.1em; text-align: center; }
 
-.hdr {
-background: linear-gradient(135deg,#003d80,#005fcc);
-padding: 16px 20px; border-radius: 12px;
-display: flex; align-items: center; gap: 12px;
-}
-.hdr-icon { font-size: 28px; }
-.hdr h1 { font-size: 17px; font-weight: 700; }
-.hdr p  { font-size: 11px; opacity: .65; margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f1f3f5; padding: 12px 5px; font-size: 0.85em; color: #666; position: sticky; top: 0; }
+        td { padding: 8px 5px; border-bottom: 1px solid #eee; text-align: center; }
+        input[type="number"] { width: 80px; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
 
-.notice {
-background: #1a1000; border: 1px solid #7c4a00;
-border-radius: 10px; padding: 12px 16px;
-font-size: 12px; line-height: 1.7; color: #fbbf24;
-}
-.notice strong { font-size: 13px; display: block; margin-bottom: 3px; }
-.notice code {
-background: #2a1a00; padding: 2px 7px; border-radius: 4px;
-font-family: monospace; font-size: 12px; color: #fff;
-}
+        .summary-row { background: #eef2f3; font-weight: bold; }
+        .summary-row td { padding: 15px 5px; border-top: 2px solid #34495e; }
 
-.card { background: #1a2030; border: 1px solid #263048; border-radius: 11px; padding: 16px; }
-.card-title { font-size: 10px; font-weight: 700; color: #5a7090; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 11px; }
+        .right-header { padding: 25px; background: #fff; border-bottom: 1px solid #eee; }
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #bdc3c7; }
 
-.status-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.badge { padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-.b-red   { background:#2d0a0a; color:#f87171; border:1px solid #5c1a1a; }
-.b-green { background:#0a2018; color:#4ade80; border:1px solid #145c30; }
-.b-amber { background:#251400; color:#fbbf24; border:1px solid #7c4a00; }
-.b-blue  { background:#091a38; color:#60a5fa; border:1px solid #1a3a6e; }
-.status-msg { font-size: 11px; color: #5a7090; margin-top: 6px; line-height: 1.5; }
-
-.mic-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.mic-icon { font-size: 22px; }
-.mic-info { flex:1; min-width:120px; }
-.mic-info b { font-size:13px; display:block; margin-bottom:2px; }
-.mic-info small { font-size:11px; color:#5a7090; }
-
-.btn {
-padding:10px 16px; border-radius:8px; border:none;
-font-size:13px; font-weight:700; cursor:pointer;
-transition:filter .15s, transform .1s; white-space:nowrap;
-}
-.btn:active { transform:scale(.96); }
-.btn:disabled { opacity:.3; cursor:not-allowed; }
-.btn-blue  { background:#004a99; color:#fff; }
-.btn-blue:hover:not(:disabled)  { filter:brightness(1.2); }
-.btn-green { background:#145c30; color:#fff; }
-.btn-green:hover:not(:disabled) { filter:brightness(1.2); }
-.btn-red   { background:#8b1a1a; color:#fff; }
-.btn-red:hover:not(:disabled)   { filter:brightness(1.2); }
-.btn-sm   { padding:4px 11px; font-size:11px; border-radius:6px; }
-.btn-full { width:100%; padding:14px; font-size:15px; border-radius:10px; }
-
-select {
-width:100%; padding:10px 13px; border-radius:8px;
-border:1px solid #263048; background:#0f1218; color:#e0e6f0;
-font-size:13px; cursor:pointer; margin-bottom:10px;
-}
-
-/* ── Visualizer ── */
-.viz-wrap {
-background:#0f1218; border-radius:10px; padding:12px 14px;
-border:1px solid #263048; display:flex; flex-direction:column; gap:8px;
-}
-.viz-top { display:flex; justify-content:space-between; align-items:center; }
-.viz-lbl { font-size:11px; color:#5a7090; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
-.viz-db  { font-size:12px; color:#fbbf24; font-weight:700; font-family:monospace; }
-.bars { display:flex; align-items:flex-end; gap:2px; height:52px; }
-.bar  { flex:1; background:#1e3a6e; border-radius:2px 2px 0 0; min-height:3px; }
-.vol-bg { height:6px; background:#1a2030; border-radius:3px; overflow:hidden; }
-.vol-fill { height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,#145c30,#fbbf24,#8b1a1a); transition:width .07s; }
-
-.pulse-row { display:flex; align-items:center; gap:10px; }
-.pulse {
-width:13px; height:13px; border-radius:50%; background:#4ade80;
-opacity:0; transition:opacity .2s;
-}
-.pulse.on { opacity:1; animation:rp 1.1s ease-out infinite; }
-@keyframes rp {
-0%  { box-shadow:0 0 0 0 rgba(74,222,128,.6); }
-70% { box-shadow:0 0 0 10px rgba(74,222,128,0); }
-100%{ box-shadow:0 0 0 0 rgba(74,222,128,0); }
-}
-.pulse-lbl { font-size:12px; color:#5a7090; }
-.pulse-lbl.on { color:#4ade80; }
-
-/* Recording segments indicator */
-.seg-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.seg-dot {
-width:10px; height:10px; border-radius:50%; background:#263048;
-transition:background .3s;
-}
-.seg-dot.active { background:#f87171; animation:blink .6s infinite; }
-.seg-dot.done   { background:#4ade80; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-.interim-box {
-min-height:40px; padding:9px 12px;
-background:#091a38; border-radius:8px; border:1px dashed #1e3a6e;
-font-size:13px; color:#60a5fa; font-style:italic; line-height:1.5;
-word-break:break-word; transition:border-color .3s;
-}
-.interim-box.speaking { border-color:#4ade80; color:#86efac; }
-.interim-box.empty    { color:#2a4060; font-style:normal; }
-
-/* ── Text display ── */
-.disp-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
-.disp-lbl { font-size:11px; font-weight:700; color:#5a7090; text-transform:uppercase; letter-spacing:.06em; }
-.disp {
-min-height:80px; max-height:200px; overflow-y:auto;
-padding:12px; background:#0f1218;
-border-left:3px solid #004a99; border-radius:0 7px 7px 0;
-white-space:pre-wrap; word-break:break-word;
-font-size:13px; line-height:1.7; color:#b0c8e0;
-}
-.disp.ko { border-left-color:#145c30; }
-.disp.ai { border-left-color:#6d28d9; white-space:normal; }
-.disp::-webkit-scrollbar { width:3px; }
-.disp::-webkit-scrollbar-thumb { background:#263048; border-radius:3px; }
-
-.sp-tag { display:inline-block; padding:1px 7px; border-radius:10px; font-size:9px; font-weight:700; margin-right:3px; }
-.t-a { background:#0d2550; color:#93c5fd; }
-.t-b { background:#0d2e1a; color:#86efac; }
-.t-c { background:#2e0d2e; color:#d8b4fe; }
-.t-inf { background:#251400; color:#fbbf24; }
-
-.dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#fbbf24; animation:blink 1s infinite; }
-
-.dbg {
-background:#0a0d12; border:1px solid #1e2a3a; border-radius:8px;
-padding:10px 12px; font-family:monospace; font-size:10px; color:#3a5070;
-max-height:100px; overflow-y:auto; line-height:1.6;
-}
-.dbg .ok   { color:#4ade80; }
-.dbg .warn { color:#fbbf24; }
-.dbg .err  { color:#f87171; }
-</style>
-
+        .report-area { flex: 1; padding: 25px; overflow-y: auto; line-height: 1.8; }
+        #ai-report { background: white; padding: 25px; border-radius: 12px; border: 1px solid #e0e0e0; min-height: 350px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .error-msg { color: #e74c3c; padding: 15px; border: 1px solid #e74c3c; border-radius: 8px; background: #fdedec; }
+    </style>
 </head>
 <body>
-<div class="wrap">
 
-<!-- Header -->
-
-<div class="hdr">
-    <div class="hdr-icon">🌐</div>
-    <div>
-        <h1>Ralph's Real-time Translator</h1>
-        <p>Claude AI 음성 분석 · 다화자 인식 · 실시간 번역</p>
-    </div>
-</div>
-
-<!-- 안내 -->
-
-<div class="notice">
-    <strong>⚠️ service-not-allowed 오류 해결 방법</strong>
-    이 앱은 이제 SpeechRecognition 대신 <b>직접 마이크 녹음 → Claude AI 전사</b> 방식을 사용합니다.<br>
-    로컬 서버 없이도 작동하지만, <b>마이크 권한</b>은 필요합니다.<br>
-    <br>
-    그래도 마이크가 안 된다면: 터미널에서 파일 폴더로 이동 후<br>
-    <code>python -m http.server 8080</code> → Chrome에서 <code>http://localhost:8080/translator.html</code>
-</div>
-
-<!-- 상태 -->
-
-<div class="card">
-    <div class="card-title">시스템 상태</div>
-    <div class="status-row">
-        <span id="bd-mic"  class="badge b-red">🎤 마이크 없음</span>
-        <span id="bd-rec"  class="badge b-red">⏺ 녹음 중지</span>
-        <span id="bd-ai"   class="badge b-blue">🤖 AI 대기</span>
-    </div>
-    <div id="status-msg" class="status-msg">초기화 중...</div>
-</div>
-
-<!-- ① 마이크 -->
-
-<div class="card">
-    <div class="card-title">① 마이크 권한 설정</div>
-    <div class="mic-row">
-        <div class="mic-icon" id="mic-icon">🔒</div>
-        <div class="mic-info">
-            <b id="mic-lbl">마이크 허용 안됨</b>
-            <small id="mic-sub">아래 버튼을 눌러 마이크 권한을 허용하세요</small>
+<div class="main-wrapper">
+    <div class="left-panel">
+        <div class="header-area">
+            <h2 style="margin:0;">사료 배합비 입력</h2>
+            <div class="remain-box" id="remain-display">남은 비율: 100.00%</div>
         </div>
-        <button class="btn btn-blue" id="mic-btn" onclick="requestMic()">마이크 허용</button>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align:left">원료명</th>
+                    <th>중량 (kg)</th>
+                    <th>비중 (%)</th>
+                    <th>ME</th>
+                    <th>CP (%)</th>
+                    <th>Ca (%)</th>
+                    <th>Av.P (%)</th>
+                </tr>
+            </thead>
+            <tbody id="ing-body"></tbody>
+            <tfoot>
+                <tr class="summary-row">
+                    <td style="text-align:left">합계 (Total)</td>
+                    <td id="t-w">0.00</td>
+                    <td id="t-p">0.00%</td>
+                    <td id="a-me">0</td>
+                    <td id="a-cp">0.00</td>
+                    <td id="a-ca">0.00</td>
+                    <td id="a-p">0.00</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
-</div>
 
-<!-- ② 설정 -->
-
-<div class="card">
-    <div class="card-title">② 언어 설정</div>
-    <select id="lang-sel">
-        <option value="auto">🔍 자동 감지 (권장 — Claude가 판별)</option>
-        <option value="en">🇺🇸 영어</option>
-        <option value="bn">🇧🇩 벵골어</option>
-        <option value="ar">🇸🇦 아랍어</option>
-        <option value="ur">🇵🇰 우르두어</option>
-        <option value="tr">🇹🇷 터키어</option>
-        <option value="zh">🇨🇳 중국어</option>
-        <option value="ja">🇯🇵 일본어</option>
-        <option value="hi">🇮🇳 힌디어</option>
-        <option value="ko">🇰🇷 한국어 (테스트용)</option>
-    </select>
-    <div style="font-size:11px;color:#5a7090;">
-        ⏱ 분석 주기: <b id="interval-lbl">8초</b>마다 Claude로 전송
-        <input type="range" id="interval-range" min="5" max="20" value="8" step="1"
-            style="width:100%;margin-top:6px;accent-color:#004a99;"
-            oninput="document.getElementById('interval-lbl').textContent=this.value+'초'">
-    </div>
-</div>
-
-<!-- ③ 시작 -->
-
-<button class="btn btn-green btn-full" id="toggle-btn" disabled onclick="toggleRec()">
-    🎤 녹음 시작
-</button>
-
-<!-- 실시간 시각화 -->
-
-<div class="card">
-    <div class="card-title">📡 실시간 청취 상태</div>
-    <div class="viz-wrap">
-        <div class="viz-top">
-            <span class="viz-lbl">🎙 마이크 입력</span>
-            <span class="viz-db" id="vol-db">— dB</span>
+    <div class="right-panel">
+        <div class="right-header">
+            <p style="margin-top:0; font-weight:bold;">타겟 품종 선택</p>
+            <select id="breed-sel" style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ddd;">
+                <option value="ross_starter">Ross 308 Starter</option>
+                <option value="ross_grower">Ross 308 Grower</option>
+                <option value="ross_finisher">Ross 308 Finisher</option>
+                <option value="cobb_starter">Cobb 500 Starter</option>
+                <option value="hyline_peak">Hy-Line Brown Peak</option>
+            </select>
+            <button id="ask-btn" onclick="askGemini()">AI 영양 평가 리포트 생성</button>
         </div>
-        <div class="bars" id="bars"></div>
-        <div class="vol-bg"><div class="vol-fill" id="vol-fill"></div></div>
-        <div class="pulse-row">
-            <div class="pulse" id="pulse"></div>
-            <span class="pulse-lbl" id="pulse-lbl">청취 대기 중</span>
+        <div class="report-area">
+            <div id="ai-report">
+                <p style="text-align:center; color:#95a5a6; margin-top:100px;">
+                    지침 v2026.04가 적용되었습니다.<br>버튼을 누르면 분석이 시작됩니다.
+                </p>
+            </div>
         </div>
     </div>
-
-```
-<!-- 세그먼트 표시 -->
-<div style="margin-top:10px;">
-    <div style="font-size:10px;color:#5a7090;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">녹음 세그먼트 큐</div>
-    <div class="seg-row" id="seg-row">
-        <span style="font-size:11px;color:#3a5070;">녹음 시작 후 표시됩니다</span>
-    </div>
-</div>
-
-<!-- 지금 분석 중인 내용 -->
-<div style="margin-top:10px;">
-    <div style="font-size:10px;color:#5a7090;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">👂 지금 처리 중인 내용</div>
-    <div class="interim-box empty" id="interim-box">녹음을 시작하면 여기에 상태가 표시됩니다</div>
-</div>
-```
-
-</div>
-
-<!-- 전사 원문 -->
-
-<div class="card">
-    <div class="disp-hdr">
-        <span class="disp-lbl">📝 전사 원문</span>
-        <div style="display:flex;gap:6px;">
-            <button class="btn btn-blue btn-sm" onclick="clearAll()">초기화</button>
-            <button class="btn btn-green btn-sm" onclick="cp('orig')">복사</button>
-        </div>
-    </div>
-    <div id="orig" class="disp"></div>
-</div>
-
-<!-- 한국어 번역 -->
-
-<div class="card">
-    <div class="disp-hdr">
-        <span class="disp-lbl">🇰🇷 한국어 번역</span>
-        <button class="btn btn-green btn-sm" onclick="cp('tran')">복사</button>
-    </div>
-    <div id="tran" class="disp ko"></div>
-</div>
-
-<!-- AI 분석 -->
-
-<div class="card">
-    <div class="disp-hdr">
-        <span class="disp-lbl">🤖 AI 분석 · 다화자 정리</span>
-        <span id="ai-spin" style="display:none;align-items:center;gap:5px;">
-            <span class="dot"></span>
-            <span style="font-size:11px;color:#fbbf24;">분석 중...</span>
-        </span>
-    </div>
-    <div id="ai-out" class="disp ai"></div>
-</div>
-
-<!-- 진단 로그 -->
-
-<div class="card">
-    <div class="card-title">🛠 진단 로그</div>
-    <div class="dbg" id="dbg"></div>
-</div>
-
 </div>
 
 <script>
-/* ═══════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════ */
-const API = "https://api.anthropic.com/v1/messages";
-const MDL = "claude-sonnet-4-20250514";
+// --- [설정] API KEY ---
+const API_KEY = "AIzaSyDLeVWkNfdszq63OvyyS58pxggtf4UTqJw"; 
 
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
-let micStream   = null;
-let mediaRec    = null;
-let audioCtx    = null;
-let analyser    = null;
-let vizRAF      = null;
-let isRec       = false;
-let recInterval = null;
-let segCount    = 0;
-let aiRunning   = false;
+const ings = [
+    { name: "옥수수 (Corn)", me: 3350, cp: 8.0, ca: 0.02, p: 0.08 },
+    { name: "대두박 (SBM 44%)", me: 2230, cp: 44.0, ca: 0.29, p: 0.20 },
+    { name: "소맥피 (Wheat Bran)", me: 1300, cp: 15.5, ca: 0.12, p: 0.40 },
+    { name: "소맥 (Wheat)", me: 3050, cp: 11.0, ca: 0.05, p: 0.13 },
+    { name: "대두유 (Soy Oil)", me: 8800, cp: 0, ca: 0, p: 0 },
+    { name: "우지 (Tallow)", me: 8600, cp: 0, ca: 0, p: 0 },
+    { name: "Full Fat Soya", me: 3300, cp: 36.0, ca: 0.25, p: 0.18 },
+    { name: "단백피 (CGF)", me: 1800, cp: 18.0, ca: 0.05, p: 0.50 },
+    { name: "채종박 (Rapeseed)", me: 1900, cp: 35.0, ca: 0.65, p: 0.30 },
+    { name: "DCP", me: 0, cp: 0, ca: 22.0, p: 18.0 },
+    { name: "MCP", me: 0, cp: 0, ca: 16.0, p: 21.0 },
+    { name: "Salt", me: 0, cp: 0, ca: 0, p: 0 }
+];
 
-let txtOrig = "";
-let txtTran = "";
+const specs = {
+    "ross_starter": { name: "Ross 308 Starter", me: 3000, cp: 23.0, ca: 0.96, p: 0.48 },
+    "ross_grower": { name: "Ross 308 Grower", me: 3100, cp: 21.5, ca: 0.87, p: 0.44 },
+    "ross_finisher": { name: "Ross 308 Finisher", me: 3200, cp: 19.5, ca: 0.79, p: 0.40 },
+    "cobb_starter": { name: "Cobb 500 Starter", me: 3000, cp: 22.0, ca: 0.90, p: 0.45 },
+    "hyline_peak": { name: "Hy-Line Brown Peak", me: 2850, cp: 17.5, ca: 4.10, p: 0.48 }
+};
 
-/* ═══════════════════════════════════════
-   LOG
-═══════════════════════════════════════ */
-function log(msg, type="") {
-    const el = document.getElementById('dbg');
-    const d  = document.createElement('div');
-    if (type) d.className = type;
-    d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    el.appendChild(d);
-    el.scrollTop = el.scrollHeight;
-    console.log(`[Translator] ${msg}`);
-}
+const tbody = document.getElementById('ing-body');
+ings.forEach((ing, i) => {
+    tbody.innerHTML += `<tr><td style="text-align:left">${ing.name}</td><td><input type="number" step="0.1" class="w-in" value="0" oninput="calculate()"></td><td class="r-p">0.00</td><td>${ing.me}</td><td>${ing.cp}</td><td>${ing.ca}</td><td>${ing.p}</td></tr>`;
+});
 
-/* ═══════════════════════════════════════
-   BARS INIT
-═══════════════════════════════════════ */
-const BAR_N = 40;
-(()=>{
-    const wrap = document.getElementById('bars');
-    for(let i=0;i<BAR_N;i++){
-        const b=document.createElement('div');
-        b.className='bar'; b.style.height='3px';
-        wrap.appendChild(b);
-    }
-})();
-
-/* ═══════════════════════════════════════
-   VISUALIZER
-═══════════════════════════════════════ */
-function startViz(stream) {
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 128;
-        audioCtx.createMediaStreamSource(stream).connect(analyser);
-        drawBars();
-        log("오디오 시각화 시작", "ok");
-    } catch(e) { log("시각화 오류: "+e.message,"warn"); }
-}
-
-function drawBars() {
-    if (!analyser) return;
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(data);
-    const bars = document.querySelectorAll('.bar');
-    const step = Math.floor(data.length / BAR_N);
-    let sum = 0;
-
-    bars.forEach((b, i) => {
-        const v = data[i * step] || 0;
-        sum += v;
-        const h = Math.max(3, (v/255)*52);
-        b.style.height = h + 'px';
-        b.style.background = v<50 ? '#1e3a6e' : v<130 ? '#0e5c5c' : '#b45309';
+function calculate() {
+    const ws = document.querySelectorAll('.w-in'), rps = document.querySelectorAll('.r-p');
+    let tw = 0, tme = 0, tcp = 0, tca = 0, tp = 0;
+    ws.forEach(v => tw += parseFloat(v.value) || 0);
+    ws.forEach((v, i) => {
+        const w = parseFloat(v.value) || 0, r = tw > 0 ? w / tw : 0;
+        rps[i].innerText = (r * 100).toFixed(2);
+        tme += r * ings[i].me; tcp += r * ings[i].cp;
+        tca += r * ings[i].ca; tp += r * ings[i].p;
     });
+    document.getElementById('t-w').innerText = tw.toFixed(2);
+    document.getElementById('t-p').innerText = (tw > 0 ? 100 : 0).toFixed(2) + "%";
+    document.getElementById('a-me').innerText = Math.round(tme);
+    document.getElementById('a-cp').innerText = tcp.toFixed(2);
+    document.getElementById('a-ca').innerText = tca.toFixed(2);
+    document.getElementById('a-p').innerText = tp.toFixed(2);
 
-    const avg = sum / BAR_N;
-    const pct = Math.min(100,(avg/255)*100);
-    const db  = avg>0 ? Math.round(20*Math.log10(avg/255)) : -60;
-    document.getElementById('vol-fill').style.width = pct+'%';
-    document.getElementById('vol-db').textContent   = db+' dB';
-
-    const loud = avg > 18;
-    const pulse = document.getElementById('pulse');
-    const plbl  = document.getElementById('pulse-lbl');
-    if (loud) {
-        pulse.className = 'pulse on';
-        plbl.className  = 'pulse-lbl on';
-        plbl.textContent = '🎙 음성 감지됨 — 녹음 중';
+    let target = tw <= 100 ? 100 : 1000;
+    let diff = target - tw;
+    let rDisp = document.getElementById('remain-display');
+    if (diff >= 0) {
+        rDisp.innerText = `남은 비율: ${((diff/target)*100).toFixed(2)}%`;
+        rDisp.style.background = "#2c3e50";
     } else {
-        pulse.className = 'pulse';
-        plbl.className  = 'pulse-lbl';
-        plbl.textContent = isRec ? '🔇 조용함 (계속 청취 중)' : '청취 대기 중';
+        rDisp.innerText = `초과됨: -${((Math.abs(diff)/target)*100).toFixed(2)}%`;
+        rDisp.style.background = "#e74c3c";
     }
-
-    vizRAF = requestAnimationFrame(drawBars);
 }
 
-function stopViz() {
-    if (vizRAF) { cancelAnimationFrame(vizRAF); vizRAF = null; }
-    if (audioCtx) { audioCtx.close(); audioCtx = null; analyser = null; }
-    document.querySelectorAll('.bar').forEach(b=>{ b.style.height='3px'; b.style.background='#1e3a6e'; });
-    document.getElementById('vol-fill').style.width='0%';
-    document.getElementById('vol-db').textContent='— dB';
-    document.getElementById('pulse').className='pulse';
-    document.getElementById('pulse-lbl').className='pulse-lbl';
-    document.getElementById('pulse-lbl').textContent='청취 대기 중';
+async function callAPI(modelName, prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    return response;
 }
 
-/* ═══════════════════════════════════════
-   MIC PERMISSION
-═══════════════════════════════════════ */
-async function requestMic() {
-    const btn = document.getElementById('mic-btn');
-    btn.disabled = true; btn.textContent='요청 중...';
-    document.getElementById('mic-icon').textContent='⏳';
-    log("마이크 권한 요청...");
+async function askGemini() {
+    const btn = document.getElementById('ask-btn'), report = document.getElementById('ai-report');
+    const spec = specs[document.getElementById('breed-sel').value];
+    const cur = { me: document.getElementById('a-me').innerText, cp: document.getElementById('a-cp').innerText, ca: document.getElementById('a-ca').innerText, p: document.getElementById('a-p').innerText };
+    
+    if (parseInt(cur.me) === 0) return alert("데이터를 입력해 주세요.");
+    
+    btn.disabled = true; btn.innerText = "분석 리포트 생성 중...";
+    report.innerHTML = "가축 영양학 전문가 AI(Gemini 2.5 Flash)가 분석 중입니다...";
+
+    const prompt = `Expert Animal Nutritionist mode. Target: ${spec.name} (ME ${spec.me}, CP ${spec.cp}%, Ca ${spec.ca}%). Current Results: ME ${cur.me}, CP ${cur.cp}%, Ca ${cur.ca}%, P ${cur.p}%. Context: Bangladesh/Pakistan heat stress. Answer in Korean, professional tone. Use HTML formatting tags.`;
 
     try {
-        micStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl:  true,
-                channelCount: 1,
-                sampleRate: 16000
-            }
-        });
-
-        document.getElementById('mic-icon').textContent='✅';
-        document.getElementById('mic-lbl').textContent='마이크 허용됨';
-        document.getElementById('mic-sub').textContent='마이크 접근이 허용되었습니다';
-        document.getElementById('bd-mic').textContent='🎤 마이크 OK';
-        document.getElementById('bd-mic').className='badge b-green';
-        btn.textContent='✓ 허용됨'; btn.style.background='#145c30';
-        document.getElementById('toggle-btn').disabled = false;
-        setMsg('마이크 허용됨 — 녹음 시작 버튼을 눌러주세요');
-        log("마이크 허용됨 ✅","ok");
-
-        startViz(micStream);
-    } catch(e) {
-        document.getElementById('mic-icon').textContent='❌';
-        document.getElementById('mic-lbl').textContent='권한 거부됨';
-        document.getElementById('mic-sub').textContent='브라우저 설정에서 마이크를 허용해주세요';
-        btn.textContent='다시 시도'; btn.disabled=false;
-        setMsg('❌ 마이크 거부됨. 주소창 🔒 → 마이크 허용 후 새로고침');
-        log("마이크 거부: "+e.message,"err");
-    }
-}
-
-/* ═══════════════════════════════════════
-   SEGMENT DOT UI
-═══════════════════════════════════════ */
-function addSegDot(id) {
-    const row = document.getElementById('seg-row');
-    if (segCount === 0) row.innerHTML = ''; // clear placeholder
-    const d = document.createElement('div');
-    d.className = 'seg-dot active';
-    d.id = 'seg-'+id;
-    d.title = `세그먼트 #${id}`;
-    row.appendChild(d);
-}
-function doneSegDot(id) {
-    const d = document.getElementById('seg-'+id);
-    if (d) d.className = 'seg-dot done';
-}
-
-/* ═══════════════════════════════════════
-   RECORDING LOOP
-═══════════════════════════════════════ */
-function getIntervalMs() {
-    return parseInt(document.getElementById('interval-range').value) * 1000;
-}
-
-function startSegment() {
-    if (!micStream || !isRec) return;
-
-    const chunks = [];
-    const segId  = ++segCount;
-    addSegDot(segId);
-
-    const mimeType = getSupportedMime();
-    let rec;
-    try {
-        rec = new MediaRecorder(micStream, mimeType ? { mimeType } : {});
-    } catch(e) {
-        rec = new MediaRecorder(micStream);
-    }
-
-    rec.ondataavailable = e => { if (e.data.size>0) chunks.push(e.data); };
-
-    rec.onstop = async () => {
-        if (!isRec && chunks.length === 0) return;
-        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
-        log(`세그먼트 #${segId} 완료 (${(blob.size/1024).toFixed(1)} KB)`,"ok");
-        setInterim(`🔄 세그먼트 #${segId} Claude로 전송 중...`);
-        await sendToClaudeAudio(blob, segId);
-        doneSegDot(segId);
-        // Start next segment immediately
-        if (isRec) startSegment();
-    };
-
-    rec.start();
-    log(`세그먼트 #${segId} 녹음 시작 (${getIntervalMs()/1000}s)`, "ok");
-    setInterim(`⏺ 세그먼트 #${segId} 녹음 중... (${getIntervalMs()/1000}초)`);
-
-    // Stop after interval
-    setTimeout(() => {
-        if (rec.state === 'recording') rec.stop();
-    }, getIntervalMs());
-}
-
-function getSupportedMime() {
-    const types = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
-    for (const t of types) {
-        if (MediaRecorder.isTypeSupported(t)) return t;
-    }
-    return null;
-}
-
-/* ═══════════════════════════════════════
-   TOGGLE
-═══════════════════════════════════════ */
-function toggleRec() {
-    if (!micStream) return;
-    if (!isRec) {
-        isRec = true;
-        document.getElementById('toggle-btn').textContent = '⏹ 녹음 중지';
-        document.getElementById('toggle-btn').className   = 'btn btn-red btn-full';
-        document.getElementById('bd-rec').textContent = '⏺ 녹음 중';
-        document.getElementById('bd-rec').className   = 'badge b-red';
-        setMsg('녹음 중 — Claude AI가 실시간으로 음성을 분석합니다');
-        log("녹음 시작","ok");
-        startSegment();
-    } else {
-        isRec = false;
-        document.getElementById('toggle-btn').textContent = '🎤 녹음 시작';
-        document.getElementById('toggle-btn').className   = 'btn btn-green btn-full';
-        document.getElementById('bd-rec').textContent = '⏺ 녹음 중지';
-        document.getElementById('bd-rec').className   = 'badge b-blue';
-        setMsg('녹음 중지됨');
-        setInterim('녹음이 중지되었습니다');
-        log("녹음 중지","warn");
-    }
-}
-
-/* ═══════════════════════════════════════
-   SEND AUDIO TO CLAUDE
-═══════════════════════════════════════ */
-async function sendToClaudeAudio(blob, segId) {
-    setAISpin(true);
-    const lv = document.getElementById('lang-sel').value;
-
-    // Convert blob to base64
-    const b64 = await blobToBase64(blob);
-    if (!b64) { log(`세그먼트 #${segId} base64 변환 실패`,"err"); setAISpin(false); return; }
-
-    const langHint = lv === 'auto'
-        ? '언어를 자동으로 감지하세요 (벵골어, 아랍어, 영어, 터키어, 우르두어, 한국어 등).'
-        : `이 오디오의 언어는 ${lv}입니다.`;
-
-    const sys = `당신은 실시간 다국어 대화 전사·번역·분석 전문가입니다.
-오디오를 받아 다음을 수행하세요:
-1. 음성을 정확히 전사하세요. ${langHint}
-2. 여러 화자가 있다면 화자A/B/C로 구분하세요.
-3. 불완전하거나 알아듣기 어려운 부분은 문맥으로 추론해 완성하고 inferred:true로 표시하세요.
-4. 전체를 자연스러운 한국어로 번역하세요.
-
-반드시 아래 JSON만 출력하세요 (다른 텍스트 없이):
-{"detected_language":"","turns":[{"speaker":"화자A","original":"","inferred":false,"korean":""}],"summary":""}
-
-오디오에 말소리가 없으면: {"detected_language":"none","turns":[],"summary":"무음"}`;
-
-    const mediaType = blob.type.includes('ogg') ? 'audio/ogg'
-                    : blob.type.includes('mp4')  ? 'audio/mp4'
-                    : 'audio/webm';
-
-    try {
-        log(`Claude API 요청 (seg #${segId}, ${mediaType})...`);
-        const res = await fetch(API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: MDL,
-                max_tokens: 1200,
-                system: sys,
-                messages: [{
-                    role: 'user',
-                    content: [
-                        {
-                            type: 'document',
-                            source: { type: 'base64', media_type: mediaType, data: b64 }
-                        },
-                        { type: 'text', text: `세그먼트 #${segId} 분석 요청` }
-                    ]
-                }]
-            })
-        });
-
-        const data = await res.json();
-        log(`API 응답: HTTP ${res.status}`, res.ok?"ok":"err");
-
-        if (!res.ok) {
-            // Fallback: maybe audio type not supported — try text-only
-            log(`오디오 API 오류: ${JSON.stringify(data.error)}`, "err");
-            renderAIError(`세그먼트 #${segId}: API 오류 — ${data.error?.message||'unknown'}`);
-            setAISpin(false);
-            return;
+        // 1차 시도: gemini-2.5-flash
+        let resp = await callAPI("gemini-2.5-flash", prompt);
+        
+        // 404 발생 시 2차 시도: gemini-1.5-flash (지침 반영)
+        if (resp.status === 404) {
+            report.innerHTML = "2.5 모델 확인 불가로 1.5 모델로 재시도 중...";
+            resp = await callAPI("gemini-1.5-flash", prompt);
         }
 
-        const txt = data.content?.map(c=>c.text||'').join('')||'';
-        log(`응답 수신 (${txt.length}자)`,"ok");
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error.message);
 
-        const m = txt.match(/\{[\s\S]*\}/);
-        if (m) {
-            try {
-                const p = JSON.parse(m[0]);
-                if (p.turns && p.turns.length > 0) {
-                    renderAIResult(p, segId);
-                } else {
-                    log(`세그먼트 #${segId}: 말소리 없음 또는 빈 응답`,"warn");
-                    setInterim(`세그먼트 #${segId}: 말소리가 감지되지 않았습니다`);
-                }
-            } catch(pe) {
-                log("JSON 파싱 오류: "+pe.message,"err");
-                renderAIError("JSON 파싱 실패: "+txt.substring(0,100));
-            }
+        if (data.candidates && data.candidates[0].content) {
+            report.innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         } else {
-            log("JSON 없음 — 원문: "+txt.substring(0,120),"warn");
-            renderAIError("응답 형식 오류: "+txt.substring(0,100));
+            throw new Error("결과 구조를 확인할 수 없습니다.");
         }
-    } catch(e) {
-        log("네트워크 오류: "+e.message,"err");
-        renderAIError("네트워크 오류: "+e.message);
+    } catch (e) {
+        report.innerHTML = `<div class="error-msg"><strong>분석 실패:</strong><br>${e.message}<br><br><small>지출 한도(Spending Cap) 초과 여부나 API 활성화 상태를 확인해 주세요.</small></div>`;
+    } finally {
+        btn.disabled = false; btn.innerText = "AI 영양 평가 리포트 생성";
     }
-
-    setAISpin(false);
 }
-
-/* ═══════════════════════════════════════
-   BASE64 CONVERT
-═══════════════════════════════════════ */
-function blobToBase64(blob) {
-    return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload  = () => res(r.result.split(',')[1]);
-        r.onerror = () => rej(null);
-        r.readAsDataURL(blob);
-    });
-}
-
-/* ═══════════════════════════════════════
-   RENDER AI RESULT
-═══════════════════════════════════════ */
-const TC = {'화자A':'t-a','화자B':'t-b','화자C':'t-c'};
-
-function renderAIResult(p, segId) {
-    // Update transcript
-    const origLines = p.turns.map(t=>t.original).filter(Boolean).join('\n');
-    const tranLines = p.turns.map(t=>t.korean).filter(Boolean).join('\n');
-
-    if (origLines) { txtOrig += origLines + '\n'; document.getElementById('orig').textContent = txtOrig; document.getElementById('orig').scrollTop = 9999; }
-    if (tranLines) { txtTran += tranLines + '\n'; document.getElementById('tran').textContent = txtTran; document.getElementById('tran').scrollTop = 9999; }
-
-    // AI analysis box
-    const el = document.getElementById('ai-out');
-    let h = `<div style="border-top:1px dashed #263048;margin:6px 0;padding-top:6px;font-size:9px;color:#3a5070;">SEG #${segId}</div>`;
-
-    if (p.detected_language && p.detected_language !== 'none')
-        h += `<div style="font-size:10px;color:#5a7090;margin-bottom:6px;">🔍 <b style="color:#fbbf24">${esc(p.detected_language)}</b></div>`;
-
-    p.turns.forEach(t => {
-        const sc = TC[t.speaker]||'t-a';
-        h += `<div style="margin-bottom:8px;">`;
-        h += `<span class="sp-tag ${sc}">${esc(t.speaker||'화자A')}</span>`;
-        if (t.inferred) h += `<span class="sp-tag t-inf">🔮 추론</span>`;
-        h += `<br><span style="color:#b0c8e0;font-size:12px;">${esc(t.original||'')}</span>`;
-        h += `<br><span style="color:#86efac;font-size:13px;">→ ${esc(t.korean||'')}</span></div>`;
-    });
-
-    if (p.summary && p.summary !== '무음')
-        h += `<div style="font-size:11px;color:#5a7090;margin-top:4px;padding-top:4px;border-top:1px solid #1a2030;">📋 <span style="color:#fbbf24">${esc(p.summary)}</span></div>`;
-
-    el.innerHTML += h;
-    el.scrollTop = el.scrollHeight;
-
-    document.getElementById('bd-ai').textContent = '🤖 분석 완료';
-    document.getElementById('bd-ai').className   = 'badge b-green';
-    setInterim(`✅ 세그먼트 #${segId} 분석 완료 — 다음 녹음 중...`);
-}
-
-function renderAIError(msg) {
-    const el = document.getElementById('ai-out');
-    el.innerHTML += `<div style="color:#f87171;font-size:11px;margin:4px 0;">[오류] ${esc(msg)}</div>`;
-    el.scrollTop = el.scrollHeight;
-}
-
-/* ═══════════════════════════════════════
-   UTILS
-═══════════════════════════════════════ */
-function setMsg(m) { document.getElementById('status-msg').textContent = m; }
-function setInterim(m, speaking=false) {
-    const el = document.getElementById('interim-box');
-    el.textContent = m;
-    el.className = speaking ? 'interim-box speaking' : 'interim-box';
-}
-function setAISpin(on) {
-    document.getElementById('ai-spin').style.display = on?'flex':'none';
-    document.getElementById('bd-ai').textContent = on?'🤖 분석 중...':'🤖 AI 대기';
-    document.getElementById('bd-ai').className   = on?'badge b-amber':'badge b-blue';
-}
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function clearAll() {
-    txtOrig=''; txtTran=''; segCount=0;
-    document.getElementById('orig').textContent='';
-    document.getElementById('tran').textContent='';
-    document.getElementById('ai-out').innerHTML='';
-    document.getElementById('seg-row').innerHTML='<span style="font-size:11px;color:#3a5070;">녹음 시작 후 표시됩니다</span>';
-    document.getElementById('bd-ai').textContent='🤖 AI 대기';
-    document.getElementById('bd-ai').className='badge b-blue';
-    setInterim('초기화됨');
-    log("전체 초기화","ok");
-}
-
-function cp(id) {
-    const t=(document.getElementById(id).innerText||'').trim();
-    if(!t) return;
-    navigator.clipboard.writeText(t).then(()=>alert('복사됨')).catch(()=>alert('복사 실패'));
-}
-
-/* ═══════════════════════════════════════
-   AUTO MIC CHECK
-═══════════════════════════════════════ */
-(async()=>{
-    log("앱 초기화...");
-    log(`브라우저: ${navigator.userAgent.substring(0,60)}`);
-    log(`프로토콜: ${location.protocol}`);
-    try {
-        const p = await navigator.permissions.query({name:'microphone'});
-        log(`마이크 권한 상태: ${p.state}`, p.state==='granted'?'ok':'warn');
-        setMsg(`마이크 권한: ${p.state} — ${p.state==='granted'?'마이크 허용 버튼을 눌러주세요':'아래 버튼으로 허용해주세요'}`);
-        if (p.state === 'granted') {
-            setTimeout(()=>document.getElementById('mic-btn').click(), 300);
-        }
-    } catch(e) {
-        log("permissions API 미지원 — 버튼으로 직접 요청","warn");
-        setMsg("마이크 허용 버튼을 눌러주세요");
-    }
-})();
 </script>
-
 </body>
 </html>
