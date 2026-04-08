@@ -2,708 +2,856 @@
 
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ralph's Real-time Translator</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1f2e;
-            padding: 16px;
-            color: #e0e6f0;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 660px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ralph's Real-time Translator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f1218;
+    color: #e0e6f0;
+    padding: 14px;
+    min-height: 100vh;
+}
+.wrap { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
 
-```
-    /* Header */
-    .header {
-        background: linear-gradient(135deg, #004a99, #0062cc);
-        padding: 18px 22px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-    .header-icon { font-size: 30px; }
-    .header h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-    .header p  { font-size: 11px; opacity: .7; }
+/* ── Header ── */
+.hdr {
+background: linear-gradient(135deg,#003d80,#005fcc);
+padding: 16px 20px; border-radius: 12px;
+display: flex; align-items: center; gap: 12px;
+}
+.hdr-icon { font-size: 28px; }
+.hdr h1 { font-size: 17px; font-weight: 700; }
+.hdr p  { font-size: 11px; opacity: .65; margin-top: 2px; }
 
-    /* Card */
-    .card {
-        background: #232a3b;
-        border: 1px solid #2e3a52;
-        border-radius: 12px;
-        padding: 18px;
-    }
-    .card-title {
-        font-size: 11px;
-        font-weight: 700;
-        color: #7a8eaa;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        margin-bottom: 12px;
-    }
+/* ── Debug / Notice Banner ── */
+.notice {
+background: #1e1200;
+border: 1px solid #7c4a00;
+border-radius: 10px;
+padding: 12px 16px;
+font-size: 12px;
+line-height: 1.6;
+color: #fbbf24;
+}
+.notice strong { display: block; margin-bottom: 4px; font-size: 13px; }
 
-    /* Status Badge */
-    .status-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 700;
-    }
-    .badge-red   { background: #3d1515; color: #ff6b6b; border: 1px solid #6b2020; }
-    .badge-green { background: #0d2e1a; color: #4ade80; border: 1px solid #166534; }
-    .badge-amber { background: #2e1f00; color: #fbbf24; border: 1px solid #92400e; }
-    .badge-blue  { background: #0d1e3d; color: #60a5fa; border: 1px solid #1e3a6e; }
-    .status-detail { font-size: 12px; color: #7a8eaa; margin-top: 6px; }
+/* ── Cards ── */
+.card {
+background: #1a2030;
+border: 1px solid #263048;
+border-radius: 11px;
+padding: 16px;
+}
+.card-title {
+font-size: 10px; font-weight: 700; color: #5a7090;
+text-transform: uppercase; letter-spacing: .1em; margin-bottom: 11px;
+}
 
-    /* Mic Section */
-    .mic-section {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    .mic-status-icon { font-size: 24px; }
-    .mic-info { flex: 1; min-width: 140px; }
-    .mic-info strong { font-size: 13px; display: block; margin-bottom: 2px; }
-    .mic-info span   { font-size: 11px; color: #7a8eaa; }
+/* ── Status Row ── */
+.status-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.badge {
+padding: 3px 11px; border-radius: 20px;
+font-size: 11px; font-weight: 700; letter-spacing: .03em;
+}
+.b-red   { background:#2d0a0a; color:#f87171; border:1px solid #5c1a1a; }
+.b-green { background:#0a2018; color:#4ade80; border:1px solid #145c30; }
+.b-amber { background:#251400; color:#fbbf24; border:1px solid #7c4a00; }
+.b-blue  { background:#091a38; color:#60a5fa; border:1px solid #1a3a6e; }
+.b-purple{ background:#1a0a2e; color:#c084fc; border:1px solid #4a1a7c; }
+.status-msg { font-size: 11px; color: #5a7090; margin-top: 6px; }
 
-    /* Buttons */
-    .btn {
-        padding: 11px 18px;
-        border-radius: 8px;
-        border: none;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: opacity .15s, transform .1s;
-        white-space: nowrap;
-    }
-    .btn:active { transform: scale(.97); }
-    .btn-primary { background: #004a99; color: #fff; }
-    .btn-primary:hover { background: #0062cc; }
-    .btn-danger  { background: #c0392b; color: #fff; }
-    .btn-danger:hover { background: #e74c3c; }
-    .btn-success { background: #1a7a4a; color: #fff; }
-    .btn-success:hover { background: #22a05f; }
-    .btn-sm  { padding: 5px 12px; font-size: 11px; border-radius: 6px; }
-    .btn-full { width: 100%; padding: 14px; font-size: 15px; }
-    .btn:disabled { opacity: .35; cursor: not-allowed; }
+/* ── Mic row ── */
+.mic-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.mic-icon { font-size: 22px; }
+.mic-info { flex:1; min-width:120px; }
+.mic-info b { font-size:13px; display:block; margin-bottom:2px; }
+.mic-info small { font-size:11px; color:#5a7090; }
 
-    /* Select */
-    select {
-        width: 100%;
-        padding: 11px 14px;
-        border-radius: 8px;
-        border: 1px solid #2e3a52;
-        background: #1a1f2e;
-        color: #e0e6f0;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    select:focus { outline: 2px solid #004a99; }
+/* ── Buttons ── */
+.btn {
+padding:10px 16px; border-radius:8px; border:none;
+font-size:13px; font-weight:700; cursor:pointer;
+transition:filter .15s, transform .1s;
+white-space:nowrap;
+}
+.btn:active { transform:scale(.96); }
+.btn:disabled { opacity:.3; cursor:not-allowed; }
+.btn-blue   { background:#004a99; color:#fff; }
+.btn-blue:hover:not(:disabled) { filter:brightness(1.2); }
+.btn-green  { background:#145c30; color:#fff; }
+.btn-green:hover:not(:disabled) { filter:brightness(1.2); }
+.btn-red    { background:#8b1a1a; color:#fff; }
+.btn-red:hover:not(:disabled) { filter:brightness(1.2); }
+.btn-sm { padding:4px 11px; font-size:11px; border-radius:6px; }
+.btn-full { width:100%; padding:14px; font-size:15px; border-radius:10px; }
 
-    /* Options grid */
-    .options-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 12px;
-    }
-    .option-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 10px 12px;
-        background: #141820;
-        border-radius: 8px;
-        border: 1px solid #2e3a52;
-        cursor: pointer;
-    }
-    .option-item input[type="checkbox"] {
-        width: 16px; height: 16px;
-        accent-color: #004a99;
-        cursor: pointer;
-        margin-top: 2px;
-        flex-shrink: 0;
-    }
-    .option-item label { font-size: 12px; cursor: pointer; line-height: 1.4; }
+/* ── Select ── */
+select {
+width:100%; padding:10px 13px; border-radius:8px;
+border:1px solid #263048; background:#0f1218; color:#e0e6f0;
+font-size:13px; cursor:pointer; margin-bottom:10px;
+}
 
-    /* Display boxes */
-    .display-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    .display-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: #7a8eaa;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-    }
-    .display {
-        min-height: 90px;
-        max-height: 240px;
-        overflow-y: auto;
-        padding: 14px;
-        background: #141820;
-        border-left: 4px solid #004a99;
-        border-radius: 0 8px 8px 0;
-        white-space: pre-wrap;
-        word-break: break-word;
-        font-size: 14px;
-        line-height: 1.7;
-        color: #c8d8ee;
-    }
-    .display.translated { border-left-color: #1a7a4a; }
-    .display.ai-box     { border-left-color: #7c3aed; white-space: normal; }
-    .interim { color: #5a7090; font-style: italic; }
+/* ── Options ── */
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
+.opt {
+display:flex; align-items:flex-start; gap:8px;
+padding:9px 11px; background:#0f1218;
+border-radius:8px; border:1px solid #263048; cursor:pointer;
+}
+.opt input { width:15px; height:15px; accent-color:#004a99; margin-top:2px; flex-shrink:0; }
+.opt label { font-size:11px; cursor:pointer; line-height:1.4; }
 
-    /* AI tags */
-    .speaker-tag {
-        display: inline-block;
-        padding: 1px 7px;
-        border-radius: 10px;
-        font-size: 10px;
-        font-weight: 700;
-        margin-right: 4px;
-    }
-    .tag-a { background: #1e3a6e; color: #93c5fd; }
-    .tag-b { background: #1a3d1a; color: #86efac; }
-    .tag-c { background: #3d1a3d; color: #d8b4fe; }
-    .tag-inferred { background: #2e1f00; color: #fbbf24; }
+/* ── Big Listen Button ── */
+#toggle-btn { letter-spacing:.03em; }
 
-    /* Processing dot */
-    .processing-dot {
-        display: inline-block;
-        width: 8px; height: 8px;
-        border-radius: 50%;
-        background: #fbbf24;
-        animation: pulse 1s infinite;
-    }
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50%       { opacity: .4; transform: scale(.7); }
-    }
+/* ══════════════════════════════════
+LIVE AUDIO VISUALIZER
+══════════════════════════════════ */
+.viz-wrap {
+background:#0f1218; border-radius:10px;
+padding:12px 14px; border:1px solid #263048;
+display:flex; flex-direction:column; gap:8px;
+}
+.viz-top { display:flex; justify-content:space-between; align-items:center; }
+.viz-label { font-size:11px; color:#5a7090; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+.viz-vol { font-size:12px; color:#fbbf24; font-weight:700; font-family:monospace; }
 
-    /* Scrollbar */
-    .display::-webkit-scrollbar { width: 4px; }
-    .display::-webkit-scrollbar-track { background: transparent; }
-    .display::-webkit-scrollbar-thumb { background: #2e3a52; border-radius: 4px; }
+/* Waveform bars */
+.bars {
+display:flex; align-items:flex-end; gap:2px; height:48px;
+}
+.bar {
+flex:1; background:#1e3a6e; border-radius:2px 2px 0 0;
+transition:height .08s ease, background .2s;
+min-height:3px;
+}
+
+/* Volume meter */
+.vol-meter-bg {
+height:6px; background:#1a2030; border-radius:3px; overflow:hidden;
+}
+.vol-meter-fill {
+height:100%; width:0%; border-radius:3px;
+background:linear-gradient(90deg,#1a7a4a,#fbbf24,#c0392b);
+transition:width .08s ease;
+}
+
+/* Listening pulse ring */
+.pulse-wrap { display:flex; align-items:center; gap:10px; }
+.pulse-ring {
+width:14px; height:14px; border-radius:50%;
+background:#4ade80; opacity:0;
+box-shadow:0 0 0 0 rgba(74,222,128,.6);
+}
+.pulse-ring.active {
+opacity:1;
+animation:ringpulse 1.2s ease-out infinite;
+}
+@keyframes ringpulse {
+0%   { box-shadow:0 0 0 0 rgba(74,222,128,.6); }
+70%  { box-shadow:0 0 0 10px rgba(74,222,128,0); }
+100% { box-shadow:0 0 0 0 rgba(74,222,128,0); }
+}
+.pulse-txt { font-size:12px; color:#5a7090; }
+.pulse-txt.active { color:#4ade80; }
+
+/* Interim “lip-reading” ticker */
+.interim-box {
+min-height:36px; padding:8px 12px;
+background:#091a38; border-radius:8px; border:1px dashed #1e3a6e;
+font-size:13px; color:#60a5fa; font-style:italic; line-height:1.5;
+word-break:break-word;
+transition:opacity .2s;
+}
+.interim-box.empty { color:#2a4060; }
+
+/* ── Display Boxes ── */
+.disp-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.disp-lbl { font-size:11px; font-weight:700; color:#5a7090; text-transform:uppercase; letter-spacing:.06em; }
+.disp {
+min-height:80px; max-height:200px; overflow-y:auto;
+padding:12px; background:#0f1218;
+border-left:3px solid #004a99; border-radius:0 7px 7px 0;
+white-space:pre-wrap; word-break:break-word;
+font-size:13px; line-height:1.7; color:#b0c8e0;
+}
+.disp.ko  { border-left-color:#145c30; }
+.disp.ai  { border-left-color:#6d28d9; white-space:normal; }
+.disp::-webkit-scrollbar { width:3px; }
+.disp::-webkit-scrollbar-thumb { background:#263048; border-radius:3px; }
+
+/* AI tags */
+.sp-tag {
+display:inline-block; padding:1px 7px; border-radius:10px;
+font-size:9px; font-weight:700; margin-right:3px;
+}
+.t-a { background:#0d2550; color:#93c5fd; }
+.t-b { background:#0d2e1a; color:#86efac; }
+.t-c { background:#2e0d2e; color:#d8b4fe; }
+.t-inf { background:#251400; color:#fbbf24; }
+
+/* Processing */
+.dot {
+display:inline-block; width:7px; height:7px; border-radius:50%;
+background:#fbbf24; animation:blink 1s infinite;
+}
+@keyframes blink {
+0%,100%{opacity:1} 50%{opacity:.2}
+}
+
+/* Debug log */
+.dbg {
+background:#0a0d12; border:1px solid #1e2a3a;
+border-radius:8px; padding:10px 12px;
+font-family:monospace; font-size:10px; color:#3a5070;
+max-height:100px; overflow-y:auto; line-height:1.6;
+}
+.dbg .ok { color:#4ade80; }
+.dbg .warn { color:#fbbf24; }
+.dbg .err { color:#f87171; }
 </style>
-```
 
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-```
 <!-- Header -->
-<div class="header">
-    <div class="header-icon">🌐</div>
+
+<div class="hdr">
+    <div class="hdr-icon">🌐</div>
     <div>
         <h1>Ralph's Real-time Translator</h1>
         <p>다화자 인식 · AI 문장 추론 · 실시간 번역</p>
     </div>
 </div>
 
-<!-- Status Card -->
+<!-- ⚠️ 사용 안내 -->
+
+<div class="notice">
+    <strong>⚠️ 반드시 Chrome 브라우저에서 로컬 파일로 열어주세요</strong>
+    이 파일을 다운로드 → Chrome에서 열기 (Ctrl+O 또는 파일 드래그) → 마이크 허용<br>
+    Claude 웹에서 바로 보는 경우 음성인식이 <strong>작동하지 않습니다</strong>.
+</div>
+
+<!-- 상태 -->
+
 <div class="card">
     <div class="card-title">시스템 상태</div>
     <div class="status-row">
-        <span id="mic-badge"    class="badge badge-red">🎤 마이크 미허용</span>
-        <span id="listen-badge" class="badge badge-red">🔴 중지됨</span>
-        <span id="ai-badge"     class="badge badge-blue">🤖 AI 대기 중</span>
+        <span id="bd-mic"    class="badge b-red">🎤 마이크 없음</span>
+        <span id="bd-sr"     class="badge b-red">🔴 중지됨</span>
+        <span id="bd-ai"     class="badge b-blue">🤖 AI 대기</span>
+        <span id="bd-browser"class="badge b-amber">🌐 브라우저 확인 중</span>
     </div>
-    <div id="status-detail" class="status-detail">마이크 권한을 먼저 허용해주세요</div>
+    <div id="status-msg" class="status-msg">초기화 중...</div>
 </div>
 
-<!-- Mic Permission Card -->
+<!-- ① 마이크 권한 -->
+
 <div class="card">
     <div class="card-title">① 마이크 권한 설정</div>
-    <div class="mic-section">
-        <div class="mic-status-icon" id="mic-icon">🔒</div>
+    <div class="mic-row">
+        <div class="mic-icon" id="mic-icon">🔒</div>
         <div class="mic-info">
-            <strong id="mic-label">마이크 허용 안됨</strong>
-            <span id="mic-desc">번역을 시작하려면 마이크 접근 권한이 필요합니다</span>
+            <b id="mic-lbl">마이크 허용 안됨</b>
+            <small id="mic-sub">번역을 시작하려면 마이크 권한이 필요합니다</small>
         </div>
-        <button class="btn btn-primary" id="mic-btn" onclick="requestMicPermission()">마이크 허용</button>
+        <button class="btn btn-blue" id="mic-btn" onclick="requestMic()">마이크 허용</button>
     </div>
 </div>
 
-<!-- Language + Options Card -->
+<!-- ② 설정 -->
+
 <div class="card">
     <div class="card-title">② 언어 및 기능 설정</div>
-    <label style="font-size:12px; color:#7a8eaa; display:block; margin-bottom:6px;">상대방 언어 (수동 설정)</label>
-    <select id="lang-select">
-        <option value="auto">🔍 자동 감지 (AI 번역)</option>
+    <select id="lang-sel">
+        <option value="auto">🔍 자동 감지 (AI 번역 — 권장)</option>
         <option value="en-US">🇺🇸 영어 (English)</option>
         <option value="bn-BD">🇧🇩 벵골어 (বাংলা)</option>
         <option value="ar-SA">🇸🇦 아랍어 (العربية)</option>
         <option value="ur-PK">🇵🇰 우르두어 (اردو)</option>
         <option value="tr-TR">🇹🇷 터키어 (Türkçe)</option>
-        <option value="zh-CN">🇨🇳 중국어 (普通话)</option>
-        <option value="ja-JP">🇯🇵 일본어 (日本語)</option>
-        <option value="hi-IN">🇮🇳 힌디어 (हिन्दी)</option>
+        <option value="zh-CN">🇨🇳 중국어 간체</option>
+        <option value="ja-JP">🇯🇵 일본어</option>
+        <option value="hi-IN">🇮🇳 힌디어</option>
+        <option value="ko-KR">🇰🇷 한국어 (테스트용)</option>
     </select>
-    <div class="options-grid">
-        <div class="option-item">
-            <input type="checkbox" id="opt-multispeaker" checked>
-            <label for="opt-multispeaker">다화자 자동 구분<br><span style="color:#5a7090">발화자 A/B/C 태깅</span></label>
-        </div>
-        <div class="option-item">
-            <input type="checkbox" id="opt-infer" checked>
-            <label for="opt-infer">비문 AI 추론 보완<br><span style="color:#5a7090">불완전 문장 자동 완성</span></label>
-        </div>
-        <div class="option-item">
-            <input type="checkbox" id="opt-continuous" checked>
-            <label for="opt-continuous">끊김 없는 청취<br><span style="color:#5a7090">자동 재시작</span></label>
-        </div>
-        <div class="option-item">
-            <input type="checkbox" id="opt-show-original" checked>
-            <label for="opt-show-original">원문 표시<br><span style="color:#5a7090">원어 텍스트 유지</span></label>
-        </div>
+    <div class="opts">
+        <div class="opt"><input type="checkbox" id="o-multi" checked><label for="o-multi">다화자 자동 구분<br><span style="color:#3a5070">발화자 A/B/C 태깅</span></label></div>
+        <div class="opt"><input type="checkbox" id="o-infer" checked><label for="o-infer">비문 AI 추론<br><span style="color:#3a5070">불완전 문장 완성</span></label></div>
+        <div class="opt"><input type="checkbox" id="o-cont" checked><label for="o-cont">끊김 없는 청취<br><span style="color:#3a5070">자동 재시작</span></label></div>
+        <div class="opt"><input type="checkbox" id="o-viz" checked><label for="o-viz">음성 시각화<br><span style="color:#3a5070">파형 · 볼륨 표시</span></label></div>
     </div>
 </div>
 
-<!-- Start/Stop Button -->
-<button class="btn btn-success btn-full" id="toggle-btn" disabled onclick="toggleListening()">
+<!-- ③ 시작 버튼 -->
+
+<button class="btn btn-green btn-full" id="toggle-btn" disabled onclick="toggleListen()">
     🎤 대화 청취 시작
 </button>
 
-<!-- Transcript Card -->
+<!-- ══ 실시간 청취 시각화 ══ -->
+
 <div class="card">
-    <div class="display-header">
-        <span class="display-label">📝 들리는 내용 (원문)</span>
-        <div style="display:flex;gap:6px;">
-            <button class="btn btn-primary btn-sm" onclick="clearAll()">초기화</button>
-            <button class="btn btn-success btn-sm" onclick="copyText('transcript')">복사</button>
-        </div>
+    <div class="card-title">📡 실시간 청취 상태</div>
+
+```
+<div class="viz-wrap">
+    <div class="viz-top">
+        <span class="viz-label">🎙 마이크 입력</span>
+        <span class="viz-vol" id="vol-pct">0 dB</span>
     </div>
-    <div id="transcript" class="display"></div>
+    <!-- Waveform bars -->
+    <div class="bars" id="bars"></div>
+    <!-- Volume meter -->
+    <div class="vol-meter-bg"><div class="vol-meter-fill" id="vol-fill"></div></div>
+    <!-- Pulse + status -->
+    <div class="pulse-wrap">
+        <div class="pulse-ring" id="pulse"></div>
+        <span class="pulse-txt" id="pulse-txt">청취 대기 중</span>
+    </div>
 </div>
 
-<!-- Translated Card -->
-<div class="card">
-    <div class="display-header">
-        <span class="display-label">🇰🇷 한국어 번역</span>
-        <button class="btn btn-success btn-sm" onclick="copyText('translated')">복사</button>
-    </div>
-    <div id="translated" class="display translated"></div>
-</div>
-
-<!-- AI Analysis Card -->
-<div class="card">
-    <div class="display-header">
-        <span class="display-label">🤖 AI 분석 · 정리</span>
-        <span id="ai-processing" style="display:none;align-items:center;gap:5px;">
-            <span class="processing-dot"></span>
-            <span style="font-size:11px;color:#fbbf24;">분석 중...</span>
-        </span>
-    </div>
-    <div id="ai-output" class="display ai-box"></div>
+<!-- Interim — 지금 듣고 있는 내용 실시간 표시 -->
+<div style="margin-top:10px;">
+    <div class="disp-lbl" style="margin-bottom:6px;">👂 지금 듣고 있는 말 (실시간 추정)</div>
+    <div class="interim-box empty" id="interim-box">—</div>
 </div>
 ```
 
 </div>
 
+<!-- 원문 -->
+
+<div class="card">
+    <div class="disp-hdr">
+        <span class="disp-lbl">📝 원문 (음성인식)</span>
+        <div style="display:flex;gap:6px;">
+            <button class="btn btn-blue btn-sm" onclick="clearAll()">초기화</button>
+            <button class="btn btn-green btn-sm" onclick="cp('orig')">복사</button>
+        </div>
+    </div>
+    <div id="orig" class="disp"></div>
+</div>
+
+<!-- 번역 -->
+
+<div class="card">
+    <div class="disp-hdr">
+        <span class="disp-lbl">🇰🇷 한국어 번역</span>
+        <button class="btn btn-green btn-sm" onclick="cp('tran')">복사</button>
+    </div>
+    <div id="tran" class="disp ko"></div>
+</div>
+
+<!-- AI 분석 -->
+
+<div class="card">
+    <div class="disp-hdr">
+        <span class="disp-lbl">🤖 AI 분석 · 정리</span>
+        <span id="ai-spin" style="display:none;align-items:center;gap:5px;">
+            <span class="dot"></span>
+            <span style="font-size:11px;color:#fbbf24;">분석 중...</span>
+        </span>
+    </div>
+    <div id="ai-out" class="disp ai"></div>
+</div>
+
+<!-- 디버그 로그 -->
+
+<div class="card">
+    <div class="card-title">🛠 진단 로그 (문제 발생 시 확인)</div>
+    <div class="dbg" id="dbg"></div>
+</div>
+
+</div><!-- /wrap -->
+
 <script>
-// ═══════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-sonnet-4-20250514";
+/* ════════════════════════════════════════════
+   GLOBALS
+════════════════════════════════════════════ */
+const API = "https://api.anthropic.com/v1/messages";
+const MDL = "claude-sonnet-4-20250514";
 
-// ═══════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════
-let micGranted     = false;
-let isListening    = false;
-let recognition    = null;
-let fullOriginal   = "";
-let fullTranslated = "";
-let aiQueue        = [];
-let isAiProcessing = false;
-let silenceTimer   = null;
-let batchBuffer    = [];
-let restartTimer   = null;
+let micOK      = false;
+let listening  = false;
+let recog      = null;
+let audioCtx   = null;
+let analyser   = null;
+let micStream  = null;
+let vizRAF     = null;
+let restartTmr = null;
+let batchTmr   = null;
 
-// ═══════════════════════════════════════════════
-// MIC PERMISSION
-// ═══════════════════════════════════════════════
-async function requestMicPermission() {
-    const btn   = document.getElementById('mic-btn');
-    const icon  = document.getElementById('mic-icon');
-    const lbl   = document.getElementById('mic-label');
-    const desc  = document.getElementById('mic-desc');
-    const badge = document.getElementById('mic-badge');
+let txtOrig = "";
+let txtTran = "";
+let batchBuf = [];
+let aiRunning = false;
 
-    btn.disabled     = true;
-    btn.textContent  = '요청 중...';
-    icon.textContent = '⏳';
+/* ════════════════════════════════════════════
+   LOG
+════════════════════════════════════════════ */
+function log(msg, type="") {
+    const el = document.getElementById('dbg');
+    const line = document.createElement('div');
+    if (type) line.className = type;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+    console.log(msg);
+}
 
+/* ════════════════════════════════════════════
+   BROWSER CHECK
+════════════════════════════════════════════ */
+(function checkBrowser() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const bdBr = document.getElementById('bd-browser');
+    if (!SR) {
+        bdBr.textContent = "❌ 음성인식 미지원";
+        bdBr.className   = "badge b-red";
+        log("SpeechRecognition API 없음 — Chrome에서 열어주세요", "err");
+        setMsg("❌ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome 브라우저에서 열어주세요.");
+    } else {
+        bdBr.textContent = "✅ Chrome";
+        bdBr.className   = "badge b-green";
+        log("SpeechRecognition API 감지됨", "ok");
+    }
+    // Check HTTPS / file protocol
+    const proto = location.protocol;
+    log(`프로토콜: ${proto}`, proto === 'https:' || proto === 'file:' ? 'ok' : 'warn');
+    if (proto !== 'https:' && proto !== 'file:') {
+        setMsg("⚠️ HTTPS 또는 로컬 파일로 열어야 마이크가 작동합니다.");
+    }
+})();
+
+/* ════════════════════════════════════════════
+   WAVEFORM BARS INIT
+════════════════════════════════════════════ */
+const BAR_COUNT = 32;
+(function initBars() {
+    const wrap = document.getElementById('bars');
+    for (let i = 0; i < BAR_COUNT; i++) {
+        const b = document.createElement('div');
+        b.className = 'bar';
+        b.style.height = '3px';
+        wrap.appendChild(b);
+    }
+})();
+
+/* ════════════════════════════════════════════
+   AUDIO VISUALIZER
+════════════════════════════════════════════ */
+async function startVisualizer(stream) {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(t => t.stop()); // Release immediately
-
-        micGranted = true;
-        icon.textContent  = '✅';
-        lbl.textContent   = '마이크 허용됨';
-        desc.textContent  = '마이크 접근이 허용되었습니다. 청취를 시작할 수 있습니다.';
-        badge.textContent = '🎤 마이크 허용됨';
-        badge.className   = 'badge badge-green';
-        btn.textContent   = '✓ 허용됨';
-        btn.style.background = '#1a7a4a';
-        setStatus('마이크 권한 확인 완료. 청취 시작 버튼을 눌러주세요.');
-        document.getElementById('toggle-btn').disabled = false;
-        initRecognition();
-    } catch (err) {
-        icon.textContent  = '❌';
-        lbl.textContent   = '권한 거부됨';
-        desc.textContent  = '브라우저 설정에서 마이크 권한을 허용한 뒤 다시 시도해주세요.';
-        badge.textContent = '🎤 권한 거부됨';
-        badge.className   = 'badge badge-red';
-        btn.textContent   = '다시 시도';
-        btn.disabled      = false;
-        setStatus('마이크 권한이 거부되었습니다. 브라우저 주소창의 🔒 아이콘을 눌러 허용해주세요.');
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        const src = audioCtx.createMediaStreamSource(stream);
+        src.connect(analyser);
+        micStream = stream;
+        drawBars();
+        log("오디오 시각화 시작", "ok");
+    } catch(e) {
+        log("시각화 오류: " + e.message, "warn");
     }
 }
 
-// ═══════════════════════════════════════════════
-// SPEECH RECOGNITION
-// ═══════════════════════════════════════════════
-function getLang() {
-    const v = document.getElementById('lang-select').value;
-    // For auto mode, use broad English as base — AI will handle actual language
-    if (v === 'auto') return 'en-US';
+function drawBars() {
+    if (!analyser) return;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+
+    const bars = document.querySelectorAll('.bar');
+    const step = Math.floor(data.length / BAR_COUNT);
+    let sumVol = 0;
+
+    bars.forEach((bar, i) => {
+        const val = data[i * step] || 0;
+        sumVol += val;
+        const h = Math.max(3, (val / 255) * 48);
+        bar.style.height = h + 'px';
+        // Color: quiet=blue, mid=teal, loud=amber
+        if (val < 60)       bar.style.background = '#1e3a6e';
+        else if (val < 140) bar.style.background = '#0e5c5c';
+        else                bar.style.background = '#b45309';
+    });
+
+    const avgVol = sumVol / BAR_COUNT;
+    const pct    = Math.min(100, (avgVol / 255) * 100);
+    const db     = avgVol > 0 ? Math.round(20 * Math.log10(avgVol / 255)) : -60;
+
+    document.getElementById('vol-fill').style.width = pct + '%';
+    document.getElementById('vol-pct').textContent  = `${db} dB`;
+
+    // Pulse ring — activate when voice detected
+    const pulse = document.getElementById('pulse');
+    const ptxt  = document.getElementById('pulse-txt');
+    if (avgVol > 20) {
+        pulse.classList.add('active');
+        ptxt.className   = 'pulse-txt active';
+        ptxt.textContent = '🎙 음성 감지됨';
+    } else {
+        pulse.classList.remove('active');
+        ptxt.className   = 'pulse-txt';
+        ptxt.textContent = listening ? '🔇 조용함 (청취 중)' : '청취 대기 중';
+    }
+
+    vizRAF = requestAnimationFrame(drawBars);
+}
+
+function stopVisualizer() {
+    if (vizRAF) { cancelAnimationFrame(vizRAF); vizRAF = null; }
+    if (audioCtx) { audioCtx.close(); audioCtx = null; analyser = null; }
+    // Reset bars
+    document.querySelectorAll('.bar').forEach(b => {
+        b.style.height = '3px';
+        b.style.background = '#1e3a6e';
+    });
+    document.getElementById('vol-fill').style.width = '0%';
+    document.getElementById('vol-pct').textContent  = '0 dB';
+    document.getElementById('pulse').classList.remove('active');
+    document.getElementById('pulse-txt').className   = 'pulse-txt';
+    document.getElementById('pulse-txt').textContent = '청취 대기 중';
+}
+
+/* ════════════════════════════════════════════
+   MIC PERMISSION
+════════════════════════════════════════════ */
+async function requestMic() {
+    const btn = document.getElementById('mic-btn');
+    btn.disabled = true;
+    btn.textContent = '요청 중...';
+    document.getElementById('mic-icon').textContent = '⏳';
+    log("마이크 권한 요청 중...");
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 }
+        });
+
+        // Keep stream alive for visualizer — SpeechRecognition shares the mic
+        micOK = true;
+        startVisualizer(stream);
+
+        document.getElementById('mic-icon').textContent  = '✅';
+        document.getElementById('mic-lbl').textContent   = '마이크 허용됨';
+        document.getElementById('mic-sub').textContent   = '마이크 접근 권한이 허용되었습니다';
+        document.getElementById('bd-mic').textContent    = '🎤 마이크 OK';
+        document.getElementById('bd-mic').className      = 'badge b-green';
+        btn.textContent   = '✓ 허용됨';
+        btn.style.background = '#145c30';
+        document.getElementById('toggle-btn').disabled = false;
+        setMsg('마이크 허용됨 — 청취 시작 버튼을 눌러주세요');
+        log("마이크 허용됨 ✅", "ok");
+
+        buildRecog();
+    } catch(e) {
+        document.getElementById('mic-icon').textContent = '❌';
+        document.getElementById('mic-lbl').textContent  = '권한 거부됨';
+        document.getElementById('mic-sub').textContent  = '브라우저 설정에서 마이크를 허용해주세요';
+        btn.textContent = '다시 시도';
+        btn.disabled = false;
+        setMsg('❌ 마이크 권한이 거부되었습니다. 주소창의 🔒를 눌러 허용해주세요.');
+        log("마이크 거부: " + e.message, "err");
+    }
+}
+
+/* ════════════════════════════════════════════
+   SPEECH RECOGNITION
+════════════════════════════════════════════ */
+function getRecogLang() {
+    const v = document.getElementById('lang-sel').value;
+    if (v === 'auto') return 'ko-KR'; // default; AI will detect actual language
     return v;
 }
 
-function initRecognition() {
+function buildRecog() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-        setStatus('❌ 이 브라우저는 음성인식을 지원하지 않습니다. Chrome을 사용해주세요.');
-        return;
-    }
+    if (!SR) { log("SpeechRecognition 없음", "err"); return; }
 
-    recognition = new SR();
-    recognition.continuous     = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-    recognition.lang           = getLang();
+    recog = new SR();
+    recog.continuous      = true;
+    recog.interimResults  = true;
+    recog.maxAlternatives = 3;
+    recog.lang            = getRecogLang();
 
-    recognition.onstart = onRecognitionStart;
-    recognition.onend   = onRecognitionEnd;
-    recognition.onerror = onRecognitionError;
-    recognition.onresult = onRecognitionResult;
+    recog.onstart = () => {
+        log(`인식 시작 (lang=${recog.lang})`, "ok");
+        document.getElementById('bd-sr').textContent = '🟢 청취 중';
+        document.getElementById('bd-sr').className   = 'badge b-green';
+        setMsg('실시간 청취 중 — 말소리를 감지하고 있습니다');
+    };
+
+    recog.onend = () => {
+        log("인식 종료", "warn");
+        if (!listening) {
+            document.getElementById('bd-sr').textContent = '🔴 중지됨';
+            document.getElementById('bd-sr').className   = 'badge b-red';
+            setMsg('청취 중지됨');
+            return;
+        }
+        // Auto-restart
+        if (document.getElementById('o-cont').checked) {
+            clearTimeout(restartTmr);
+            restartTmr = setTimeout(() => {
+                if (!listening) return;
+                recog.lang = getRecogLang();
+                try { recog.start(); log("자동 재시작", "ok"); }
+                catch(e) { log("재시작 실패: " + e.message, "err"); }
+            }, 200);
+        }
+    };
+
+    recog.onerror = (e) => {
+        log(`인식 오류: ${e.error}`, ['no-speech','aborted'].includes(e.error) ? '' : 'err');
+        if (['no-speech','aborted'].includes(e.error)) return;
+        // Attempt recovery
+        if (listening) {
+            clearTimeout(restartTmr);
+            restartTmr = setTimeout(() => {
+                if (!listening) return;
+                try { recog.start(); }
+                catch(e2) { log("복구 재시작 실패: " + e2.message, "err"); }
+            }, 600);
+        }
+    };
+
+    recog.onresult = onResult;
+    log("SpeechRecognition 객체 생성 완료", "ok");
 }
 
-function onRecognitionStart() {
-    isListening = true;
-    document.getElementById('toggle-btn').textContent  = '⏹ 청취 중지';
-    document.getElementById('toggle-btn').className    = 'btn btn-danger btn-full';
-    document.getElementById('listen-badge').textContent = '🟢 청취 중';
-    document.getElementById('listen-badge').className   = 'badge badge-green';
-    setStatus('실시간 분석 중 — 말소리를 감지하고 있습니다');
-}
-
-function onRecognitionEnd() {
-    if (!isListening) {
-        document.getElementById('toggle-btn').textContent = '🎤 대화 청취 시작';
-        document.getElementById('toggle-btn').className   = 'btn btn-success btn-full';
-        document.getElementById('listen-badge').textContent = '🔴 중지됨';
-        document.getElementById('listen-badge').className   = 'badge badge-red';
-        setStatus('청취가 중지되었습니다');
-        return;
-    }
-    const continuous = document.getElementById('opt-continuous').checked;
-    if (continuous) {
-        // Restart immediately to avoid gaps
-        clearTimeout(restartTimer);
-        restartTimer = setTimeout(() => {
-            if (!isListening) return;
-            try {
-                recognition.lang = getLang();
-                recognition.start();
-            } catch(e) {}
-        }, 100);
-    }
-}
-
-function onRecognitionError(e) {
-    if (['no-speech', 'aborted', 'audio-capture'].includes(e.error)) return;
-    setStatus(`음성인식 오류: ${e.error}`);
-    // Auto-restart on error if still supposed to be listening
-    if (isListening) {
-        clearTimeout(restartTimer);
-        restartTimer = setTimeout(() => {
-            if (!isListening) return;
-            try { recognition.start(); } catch(e2) {}
-        }, 500);
-    }
-}
-
-function onRecognitionResult(event) {
+/* ════════════════════════════════════════════
+   RESULT HANDLER
+════════════════════════════════════════════ */
+function onResult(evt) {
     let interim = '';
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-        const res  = event.results[i];
+
+    for (let i = evt.resultIndex; i < evt.results.length; i++) {
+        const res  = evt.results[i];
+        // Pick best alternative
         const text = res[0].transcript.trim();
         if (!text) continue;
 
         if (res.isFinal) {
-            fullOriginal += text + '\n';
-            renderTranscript();
-            batchBuffer.push(text);
-            scheduleBatchProcess();
+            log(`확정: "${text.substring(0,40)}..."`, "ok");
+            txtOrig += text + '\n';
+            renderOrig();
 
-            // Also do quick translation for non-auto languages
-            const lv = document.getElementById('lang-select').value;
-            if (lv !== 'auto') {
-                quickTranslate(text, lv);
-            }
+            batchBuf.push(text);
+            scheduleBatch();
+
+            const lv = document.getElementById('lang-sel').value;
+            if (lv !== 'auto') quickTran(text, lv);
+
         } else {
             interim = text;
         }
     }
-    renderTranscript(interim);
+
+    // Show interim in visualizer box
+    const ibox = document.getElementById('interim-box');
+    if (interim) {
+        ibox.textContent = interim;
+        ibox.className   = 'interim-box';
+    } else {
+        ibox.textContent = '—';
+        ibox.className   = 'interim-box empty';
+    }
+
+    renderOrig(interim);
 }
 
-function renderTranscript(interim = '') {
-    const el = document.getElementById('transcript');
-    let html = esc(fullOriginal);
-    if (interim) html += `<span class="interim">${esc(interim)}...</span>`;
-    el.innerHTML = html;
+function renderOrig(interim = '') {
+    const el = document.getElementById('orig');
+    el.textContent = txtOrig + (interim ? `…${interim}` : '');
     el.scrollTop = el.scrollHeight;
 }
 
-// ═══════════════════════════════════════════════
-// TOGGLE
-// ═══════════════════════════════════════════════
-function toggleListening() {
-    if (!micGranted) return;
-    if (!isListening) {
-        if (!recognition) initRecognition();
-        recognition.lang = getLang();
-        isListening = true;
-        try { recognition.start(); } catch(e) {}
+/* ════════════════════════════════════════════
+   TOGGLE
+════════════════════════════════════════════ */
+function toggleListen() {
+    if (!micOK) return;
+    if (!listening) {
+        if (!recog) buildRecog();
+        listening = true;
+        recog.lang = getRecogLang();
+        try { recog.start(); }
+        catch(e) { log("시작 오류: " + e.message, "err"); }
+        document.getElementById('toggle-btn').textContent = '⏹ 청취 중지';
+        document.getElementById('toggle-btn').className   = 'btn btn-red btn-full';
     } else {
-        isListening = false;
-        clearTimeout(restartTimer);
-        try { recognition.stop(); } catch(e) {}
+        listening = false;
+        clearTimeout(restartTmr);
+        try { recog.stop(); }
+        catch(e) {}
+        document.getElementById('toggle-btn').textContent = '🎤 대화 청취 시작';
+        document.getElementById('toggle-btn').className   = 'btn btn-green btn-full';
+        document.getElementById('interim-box').textContent = '—';
+        document.getElementById('interim-box').className   = 'interim-box empty';
     }
 }
 
-// ═══════════════════════════════════════════════
-// QUICK TRANSLATION (MyMemory — Bengali fixed)
-// ═══════════════════════════════════════════════
-const LANG_MAP = {
-    'bn-BD': 'bn', 'ar-SA': 'ar', 'ur-PK': 'ur',
-    'tr-TR': 'tr', 'en-US': 'en', 'zh-CN': 'zh',
-    'ja-JP': 'ja', 'hi-IN': 'hi',
+/* ════════════════════════════════════════════
+   QUICK TRANSLATION (MyMemory)
+════════════════════════════════════════════ */
+const LMAP = {
+    'bn-BD':'bn','ar-SA':'ar','ur-PK':'ur','tr-TR':'tr',
+    'en-US':'en','zh-CN':'zh','ja-JP':'ja','hi-IN':'hi','ko-KR':'ko'
 };
 
-async function quickTranslate(text, langCode) {
-    const src = LANG_MAP[langCode] || langCode.split('-')[0];
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|ko`;
+async function quickTran(text, lv) {
+    const src = LMAP[lv] || lv.split('-')[0];
     try {
-        const res  = await fetch(url);
-        const data = await res.json();
-        const t    = data.responseData?.translatedText;
+        const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|ko`);
+        const d = await r.json();
+        const t = d.responseData?.translatedText;
         if (t && !t.includes('MYMEMORY WARNING') && t !== text) {
-            fullTranslated += t + '\n';
+            txtTran += t + '\n';
         } else {
-            fullTranslated += `[번역중...]\n`;
+            txtTran += '[번역 대기 중]\n';
         }
-    } catch(e) {
-        fullTranslated += '[네트워크오류]\n';
-    }
-    const el = document.getElementById('translated');
-    el.textContent = fullTranslated;
-    el.scrollTop   = el.scrollHeight;
+    } catch { txtTran += '[네트워크 오류]\n'; }
+    const el = document.getElementById('tran');
+    el.textContent = txtTran;
+    el.scrollTop = el.scrollHeight;
 }
 
-// ═══════════════════════════════════════════════
-// AI BATCH PROCESSING
-// ═══════════════════════════════════════════════
-function scheduleBatchProcess() {
-    clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(() => {
-        if (batchBuffer.length > 0) {
-            const batch = batchBuffer.splice(0);
-            runAiAnalysis(batch);
+/* ════════════════════════════════════════════
+   AI BATCH
+════════════════════════════════════════════ */
+function scheduleBatch() {
+    clearTimeout(batchTmr);
+    batchTmr = setTimeout(() => {
+        if (batchBuf.length) {
+            const batch = batchBuf.splice(0);
+            runAI(batch);
         }
-    }, 3000); // Send to AI after 3s of no new finals
+    }, 3500);
 }
 
-async function runAiAnalysis(segments) {
-    if (!segments.length) return;
-    setAiProcessing(true);
+async function runAI(segs) {
+    if (!segs.length) return;
+    setAISpin(true);
+    log(`AI 분석 시작 (${segs.length}개 세그먼트)`, "ok");
 
-    const lv       = document.getElementById('lang-select').value;
-    const optMulti = document.getElementById('opt-multispeaker').checked;
-    const optInfer = document.getElementById('opt-infer').checked;
-    const rawText  = segments.join('\n');
+    const raw = segs.join('\n');
+    const lv  = document.getElementById('lang-sel').value;
+    const om  = document.getElementById('o-multi').checked;
+    const oi  = document.getElementById('o-infer').checked;
 
-    const system = `당신은 실시간 다국어 대화 분석 전문가입니다. 음성인식된 텍스트를 분석하여 다음 작업을 수행하세요:
-
-1. 언어 자동 감지 (벵골어, 아랍어, 영어, 터키어, 우르두어, 한국어 등)
-2. 다화자 구분: 언어 변화, 문맥, 말투로 화자를 추정 (화자A, 화자B, 화자C)
-3. 비문 보완: 음성인식 오류나 불완전 문장을 문맥으로 추론해 완성 (inferred: true 표시)
-4. 한국어 번역: 자연스러운 한국어로 번역
-
-반드시 아래 JSON 형식으로만 응답하세요 (다른 텍스트, 마크다운 없이):
-{"detected_language":"언어명","turns":[{"speaker":"화자A","original":"보완된 원문","inferred":false,"korean":"한국어 번역"}],"summary":"한 줄 요약"}`;
-
-    const user = `음성인식 텍스트:\n${rawText}`;
+    const sys = `당신은 실시간 다국어 대화 분석 전문가입니다.
+음성인식 텍스트를 분석하여 수행:
+1. 언어 자동 감지 (벵골어·아랍어·영어·터키어·우르두어·한국어 등)
+2. 다화자 구분: 언어/문맥/말투로 화자 추정 (화자A/B/C)
+3. 비문 보완: 음성인식 오류·불완전 문장을 문맥으로 추론해 완성 (inferred:true)
+4. 자연스러운 한국어 번역
+JSON만 출력 (마크다운 없이):
+{"detected_language":"","turns":[{"speaker":"화자A","original":"","inferred":false,"korean":""}],"summary":""}`;
 
     try {
-        const res  = await fetch(ANTHROPIC_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const res  = await fetch(API, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
-                model: MODEL,
-                max_tokens: 1000,
-                system,
-                messages: [{ role: 'user', content: user }]
+                model: MDL, max_tokens: 1000,
+                system: sys,
+                messages:[{role:'user', content:`음성인식 텍스트:\n${raw}`}]
             })
         });
         const data = await res.json();
-        const text = data.content?.map(c => c.text || '').join('') || '';
-        const m    = text.match(/\{[\s\S]*\}/);
+        log(`AI 응답 상태: ${res.status}`, res.ok ? "ok" : "err");
+        const txt = data.content?.map(c=>c.text||'').join('') || '';
+        const m   = txt.match(/\{[\s\S]*\}/);
         if (m) {
-            const parsed = JSON.parse(m[0]);
-            renderAiResult(parsed, optMulti, optInfer);
-            // Auto mode: use AI for translation too
-            if (lv === 'auto' && parsed.turns) {
-                const lines = parsed.turns.map(t => t.korean).filter(Boolean).join('\n');
-                if (lines) {
-                    fullTranslated += lines + '\n';
-                    const el = document.getElementById('translated');
-                    el.textContent = fullTranslated;
-                    el.scrollTop   = el.scrollHeight;
-                }
+            const p = JSON.parse(m[0]);
+            renderAI(p, om, oi);
+            if (lv === 'auto' && p.turns) {
+                const lines = p.turns.map(t=>t.korean).filter(Boolean).join('\n');
+                if (lines) { txtTran += lines + '\n'; document.getElementById('tran').textContent = txtTran; }
             }
         } else {
-            appendAiRaw(text);
+            log("AI JSON 파싱 실패: " + txt.substring(0,80), "warn");
         }
-    } catch(err) {
-        appendAiRaw(`[AI 오류] ${err.message}`);
+    } catch(e) {
+        log("AI 요청 오류: " + e.message, "err");
     }
-
-    setAiProcessing(false);
+    setAISpin(false);
 }
 
-// ═══════════════════════════════════════════════
-// RENDER AI RESULT
-// ═══════════════════════════════════════════════
-const TAG_CLASS = { '화자A': 'tag-a', '화자B': 'tag-b', '화자C': 'tag-c' };
+const TCLS = {'화자A':'t-a','화자B':'t-b','화자C':'t-c'};
 
-function renderAiResult(parsed, showMulti, showInfer) {
-    const el = document.getElementById('ai-output');
-    let html = '';
+function renderAI(p, om, oi) {
+    const el = document.getElementById('ai-out');
+    let h = '';
+    if (p.detected_language)
+        h += `<div style="font-size:10px;color:#5a7090;margin-bottom:8px;">🔍 감지 언어: <b style="color:#fbbf24">${esc(p.detected_language)}</b></div>`;
 
-    if (parsed.detected_language) {
-        html += `<div style="font-size:11px;color:#7a8eaahttps://book4241-cloud.github.io/Puppy-papa/;margin-bottom:8px;">🔍 감지 언어: <strong style="color:#fbbf24">${esc(parsed.detected_language)}</strong></div>`;
-    }
-
-    (parsed.turns || []).forEach(turn => {
-        const spk = turn.speaker || '화자A';
-        const tc  = TAG_CLASS[spk] || 'tag-a';
-        html += `<div style="margin-bottom:10px;">`;
-        if (showMulti) html += `<span class="speaker-tag ${tc}">${esc(spk)}</span>`;
-        if (turn.inferred && showInfer) html += `<span class="speaker-tag tag-inferred">🔮 추론</span>`;
-        html += `<br><span style="color:#c8d8ee;">${esc(turn.original || '')}</span>`;
-        html += `<br><span style="color:#86efac;font-size:13px;">→ ${esc(turn.korean || '')}</span>`;
-        html += `</div>`;
+    (p.turns||[]).forEach(t => {
+        const sc = TCLS[t.speaker] || 't-a';
+        h += `<div style="margin-bottom:9px;">`;
+        if (om) h += `<span class="sp-tag ${sc}">${esc(t.speaker||'화자A')}</span>`;
+        if (t.inferred && oi) h += `<span class="sp-tag t-inf">🔮 추론</span>`;
+        h += `<br><span style="color:#b0c8e0;font-size:12px;">${esc(t.original||'')}</span>`;
+        h += `<br><span style="color:#86efac;font-size:13px;">→ ${esc(t.korean||'')}</span></div>`;
     });
 
-    if (parsed.summary) {
-        html += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #2e3a52;font-size:12px;color:#7a8eaa;">📋 요약: <span style="color:#fbbf24">${esc(parsed.summary)}</span></div>`;
-    }
+    if (p.summary)
+        h += `<div style="margin-top:7px;padding-top:7px;border-top:1px solid #263048;font-size:11px;color:#5a7090;">📋 <span style="color:#fbbf24">${esc(p.summary)}</span></div>`;
 
-    el.innerHTML += html;
-    el.scrollTop  = el.scrollHeight;
-    document.getElementById('ai-badge').textContent = '🤖 분석 완료';
-    document.getElementById('ai-badge').className   = 'badge badge-green';
-}
-
-function appendAiRaw(text) {
-    const el = document.getElementById('ai-output');
-    el.textContent += text + '\n';
+    el.innerHTML += h;
     el.scrollTop = el.scrollHeight;
+    document.getElementById('bd-ai').textContent = '🤖 분석 완료';
+    document.getElementById('bd-ai').className   = 'badge b-green';
 }
 
-function setAiProcessing(on) {
-    document.getElementById('ai-processing').style.display = on ? 'flex' : 'none';
-    if (on) {
-        document.getElementById('ai-badge').textContent = '🤖 분석 중...';
-        document.getElementById('ai-badge').className   = 'badge badge-amber';
-    }
+function setAISpin(on) {
+    document.getElementById('ai-spin').style.display = on ? 'flex' : 'none';
+    document.getElementById('bd-ai').textContent = on ? '🤖 분석 중...' : '🤖 AI 대기';
+    document.getElementById('bd-ai').className   = on ? 'badge b-amber' : 'badge b-blue';
 }
 
-// ═══════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════
-function setStatus(msg) { document.getElementById('status-detail').textContent = msg; }
-
-function esc(s) {
-    if (!s) return '';
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+/* ════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════ */
+function setMsg(m) { document.getElementById('status-msg').textContent = m; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function clearAll() {
-    fullOriginal = ''; fullTranslated = ''; batchBuffer = []; aiQueue = [];
-    document.getElementById('transcript').innerHTML   = '';
-    document.getElementById('translated').textContent = '';
-    document.getElementById('ai-output').innerHTML    = '';
-    document.getElementById('ai-badge').textContent   = '🤖 AI 대기 중';
-    document.getElementById('ai-badge').className     = 'badge badge-blue';
+    txtOrig = ''; txtTran = ''; batchBuf = [];
+    document.getElementById('orig').textContent   = '';
+    document.getElementById('tran').textContent   = '';
+    document.getElementById('ai-out').innerHTML   = '';
+    document.getElementById('interim-box').textContent = '—';
+    document.getElementById('interim-box').className   = 'interim-box empty';
+    document.getElementById('bd-ai').textContent  = '🤖 AI 대기';
+    document.getElementById('bd-ai').className    = 'badge b-blue';
+    log("전체 초기화", "ok");
 }
 
-function copyText(id) {
-    const el = document.getElementById(id);
-    const t  = (el.innerText || el.textContent).trim();
+function cp(id) {
+    const t = (document.getElementById(id).innerText||'').trim();
     if (!t) return;
-    navigator.clipboard.writeText(t).then(() => alert('복사되었습니다.')).catch(() => alert('복사 실패'));
+    navigator.clipboard.writeText(t).then(()=>alert('복사됨')).catch(()=>alert('복사 실패'));
 }
 
-// ═══════════════════════════════════════════════
-// AUTO-DETECT EXISTING MIC PERMISSION ON LOAD
-// ═══════════════════════════════════════════════
+/* ════════════════════════════════════════════
+   AUTO-CHECK EXISTING PERMISSION
+════════════════════════════════════════════ */
 (async () => {
     try {
-        const perm = await navigator.permissions.query({ name: 'microphone' });
-        if (perm.state === 'granted') {
-            micGranted = true;
-            document.getElementById('mic-icon').textContent  = '✅';
-            document.getElementById('mic-label').textContent = '마이크 이미 허용됨';
-            document.getElementById('mic-desc').textContent  = '이전에 허용된 마이크 권한이 유효합니다';
-            document.getElementById('mic-badge').textContent = '🎤 마이크 허용됨';
-            document.getElementById('mic-badge').className   = 'badge badge-green';
-            const btn = document.getElementById('mic-btn');
-            btn.textContent   = '✓ 허용됨';
-            btn.style.background = '#1a7a4a';
-            document.getElementById('toggle-btn').disabled   = false;
-            setStatus('마이크 허용됨. 청취 시작 버튼을 눌러주세요.');
-            initRecognition();
+        const p = await navigator.permissions.query({name:'microphone'});
+        log(`마이크 권한 상태: ${p.state}`, p.state==='granted'?'ok':'warn');
+        if (p.state === 'granted') {
+            // Pre-grant — trigger mic setup automatically
+            document.getElementById('mic-btn').click();
         }
-    } catch(e) { /* permissions API not supported */ }
+    } catch(e) { log("permissions API 미지원 — 버튼으로 요청하세요", "warn"); }
 })();
 </script>
 
