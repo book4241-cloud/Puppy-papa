@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ralph's Real-time Translator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        select, button.main-btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
+        button.main-btn { background: #004a99; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button.main-btn:active { background: #003366; }
+        .display { min-height: 80px; padding: 15px; background: #f9f9f9; border-left: 5px solid #004a99; margin-bottom: 20px; white-space: pre-wrap; }
+        .status { font-size: 14px; text-align: center; margin-bottom: 10px; font-weight: bold; }
+        #help-btn { padding: 6px 12px; font-size: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; position: absolute; top: 25px; right: 25px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="help-btn">마이크 권한 안내</button>
+        <h2>실시간 대화 번역기</h2>
+        <div id="status" class="status" style="color: #d9534f;">🔴 중지됨 (HTTPS 환경 필요)</div>
+        
+        <label for="lang-select">상대방 언어 설정:</label>
+        <select id="lang-select">
+            <option value="en-US">영어 (English)</option>
+            <option value="bn-BD">벵골어 (Bangladesh)</option>
+            <option value="ar-SA">아랍어 (Saudi Arabia)</option>
+            <option value="ur-PK">우르두어 (Pakistan)</option>
+            <option value="tr-TR">터키어 (Turkey)</option>
+        </select>
+
+        <button id="toggle-btn" class="main-btn">대화 청취 시작</button>
+
+        <h3>들리는 내용:</h3>
+        <div id="transcript" class="display"></div>
+
+        <h3>한국어 번역 결과:</h3>
+        <div id="translated" class="display" style="background-color: #eef7ff;"></div>
+    </div>
+
+    <script>
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const startBtn = document.getElementById('toggle-btn');
+        const langSelect = document.getElementById('lang-select');
+        const statusDisp = document.getElementById('status');
+        const helpBtn = document.getElementById('help-btn');
+        
+        let isListening = false;
+
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        startBtn.onclick = () => {
+            if (!isListening) {
+                recognition.lang = langSelect.value;
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log("이미 실행 중입니다.");
+                }
+            } else {
+                isListening = false;
+                recognition.stop();
+            }
+        };
+
+        recognition.onstart = () => {
+            isListening = true;
+            startBtn.innerText = "대화 청취 중지";
+            startBtn.style.background = "#d9534f";
+            statusDisp.innerText = "🟢 실시간 분석 중... (끊김 방지 가동)";
+            statusDisp.style.color = "#5cb85c";
+        };
+
+        recognition.onend = () => {
+            if (isListening) {
+                recognition.start(); 
+            } else {
+                startBtn.innerText = "대화 청취 시작";
+                startBtn.style.background = "#004a99";
+                statusDisp.innerText = "🔴 중지됨";
+                statusDisp.style.color = "#d9534f";
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.log("인식 오류 발생, 재시작 대기:", event.error);
+            if (event.error === 'not-allowed') {
+                isListening = false;
+                statusDisp.innerText = "🔴 마이크 권한이 차단되었습니다. 우측 상단 버튼을 확인하세요.";
+                statusDisp.style.color = "#d9534f";
+            }
+        };
+
+        recognition.onresult = (event) => {
+            let interimText = '';
+            let finalText = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const text = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalText += text;
+                    translateText(finalText);
+                } else {
+                    interimText += text;
+                }
+            }
+            document.getElementById('transcript').innerText = finalText || interimText;
+        };
+
+        function translateText(text) {
+            document.getElementById('translated').innerText = "[번역 API 연동 필요]: " + text;
+        }
+
+        helpBtn.onclick = () => {
+            alert("브라우저 보안 정책으로 인해 버튼으로 권한을 강제 변경할 수 없습니다.\n\n[해제 방법]\n1. 브라우저 주소창 왼쪽 자물쇠(🔒) 또는 설정 아이콘 클릭\n2. '마이크' 권한을 찾아 '허용'으로 변경\n3. 페이지 새로고침 후 대화 청취 다시 시작");
+        };
+    </script>
+</body>
+</html>
