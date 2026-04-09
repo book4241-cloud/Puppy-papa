@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실시간 통역기 — Arabic / Bengali → 한국어</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Sans+Arabic:wght@300;400;600;700&family=Noto+Sans+Bengali:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0f;
+    --surface: #12131a;
+    --surface2: #1a1b25;
+    --border: #2a2b38;
+    --text: #e8e9f0;
+    --text-dim: #6b6d7b;
+    --accent-ar: #f59e0b;
+    --accent-ar-glow: #f59e0b33;
+    --accent-bn: #10b981;
+    --accent-bn-glow: #10b98133;
+    --accent-ko: #6366f1;
+    --accent-ko-glow: #6366f133;
+    --danger: #ef4444;
+    --warning: #f97316;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Noto Sans KR’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Ambient background */
+body::before {
+content: ‘’;
+position: fixed;
+top: -50%; left: -50%;
+width: 200%; height: 200%;
+background: radial-gradient(ellipse at 30% 20%, var(–accent-ar-glow) 0%, transparent 50%),
+radial-gradient(ellipse at 70% 80%, var(–accent-bn-glow) 0%, transparent 50%),
+radial-gradient(ellipse at 50% 50%, var(–accent-ko-glow) 0%, transparent 40%);
+animation: ambientDrift 20s ease-in-out infinite alternate;
+z-index: 0;
+pointer-events: none;
+}
+
+@keyframes ambientDrift {
+0% { transform: translate(0, 0) rotate(0deg); }
+100% { transform: translate(-3%, 2%) rotate(3deg); }
+}
+
+.app {
+position: relative;
+z-index: 1;
+max-width: 900px;
+margin: 0 auto;
+padding: 24px 20px;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+
+/* Header */
+.header {
+text-align: center;
+margin-bottom: 24px;
+}
+
+.header h1 {
+font-size: 28px;
+font-weight: 900;
+letter-spacing: -1px;
+background: linear-gradient(135deg, var(–accent-ar), var(–accent-ko), var(–accent-bn));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.header p {
+color: var(–text-dim);
+font-size: 13px;
+margin-top: 4px;
+font-family: ‘IBM Plex Mono’, monospace;
+}
+
+/* Controls */
+.controls {
+display: flex;
+gap: 10px;
+align-items: center;
+justify-content: center;
+flex-wrap: wrap;
+margin-bottom: 20px;
+}
+
+.lang-btn {
+padding: 10px 20px;
+border-radius: 10px;
+border: 2px solid var(–border);
+background: var(–surface);
+color: var(–text);
+font-family: ‘Noto Sans KR’, sans-serif;
+font-size: 14px;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.3s;
+position: relative;
+overflow: hidden;
+}
+
+.lang-btn:hover { border-color: var(–text-dim); }
+
+.lang-btn.active-ar {
+border-color: var(–accent-ar);
+background: linear-gradient(135deg, #f59e0b15, #f59e0b08);
+box-shadow: 0 0 20px var(–accent-ar-glow);
+}
+
+.lang-btn.active-bn {
+border-color: var(–accent-bn);
+background: linear-gradient(135deg, #10b98115, #10b98108);
+box-shadow: 0 0 20px var(–accent-bn-glow);
+}
+
+.mic-btn {
+width: 64px;
+height: 64px;
+border-radius: 50%;
+border: 3px solid var(–border);
+background: var(–surface);
+color: var(–text);
+font-size: 24px;
+cursor: pointer;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+}
+
+.mic-btn.listening {
+border-color: var(–danger);
+background: linear-gradient(135deg, #ef444420, #ef444410);
+box-shadow: 0 0 30px #ef444440;
+animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.06); }
+}
+
+.mic-btn .ripple {
+position: absolute;
+width: 100%;
+height: 100%;
+border-radius: 50%;
+border: 2px solid var(–danger);
+opacity: 0;
+animation: rippleOut 1.5s ease-out infinite;
+}
+
+@keyframes rippleOut {
+0% { transform: scale(1); opacity: 0.6; }
+100% { transform: scale(2); opacity: 0; }
+}
+
+/* Status */
+.status-bar {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+margin-bottom: 16px;
+font-size: 12px;
+font-family: ‘IBM Plex Mono’, monospace;
+color: var(–text-dim);
+}
+
+.status-dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: var(–text-dim);
+transition: background 0.3s;
+}
+
+.status-dot.active {
+background: #22c55e;
+box-shadow: 0 0 8px #22c55e80;
+animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.4; }
+}
+
+/* Transcript area */
+.transcript-area {
+flex: 1;
+display: flex;
+flex-direction: column;
+gap: 16px;
+overflow: hidden;
+}
+
+.panel {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 14px;
+padding: 16px;
+flex: 1;
+display: flex;
+flex-direction: column;
+min-height: 180px;
+position: relative;
+overflow: hidden;
+}
+
+.panel::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+border-radius: 14px 14px 0 0;
+}
+
+.panel.source::before {
+background: linear-gradient(90deg, var(–accent-ar), var(–accent-bn));
+}
+
+.panel.translated::before {
+background: var(–accent-ko);
+}
+
+.panel-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 10px;
+flex-shrink: 0;
+}
+
+.panel-label {
+font-size: 11px;
+font-family: ‘IBM Plex Mono’, monospace;
+font-weight: 500;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+color: var(–text-dim);
+}
+
+.clear-btn {
+background: none;
+border: 1px solid var(–border);
+color: var(–text-dim);
+font-size: 11px;
+padding: 3px 10px;
+border-radius: 6px;
+cursor: pointer;
+font-family: ‘IBM Plex Mono’, monospace;
+transition: all 0.2s;
+}
+
+.clear-btn:hover {
+border-color: var(–danger);
+color: var(–danger);
+}
+
+.panel-content {
+flex: 1;
+overflow-y: auto;
+font-size: 15px;
+line-height: 1.8;
+scroll-behavior: smooth;
+}
+
+.panel-content::-webkit-scrollbar { width: 4px; }
+.panel-content::-webkit-scrollbar-track { background: transparent; }
+.panel-content::-webkit-scrollbar-thumb { background: var(–border); border-radius: 4px; }
+
+.source .panel-content {
+font-family: ‘Noto Sans Arabic’, ‘Noto Sans Bengali’, sans-serif;
+direction: auto;
+}
+
+.translated .panel-content {
+font-family: ‘Noto Sans KR’, sans-serif;
+}
+
+/* Segment styling */
+.segment {
+padding: 6px 0;
+border-bottom: 1px solid var(–border);
+opacity: 0;
+animation: fadeIn 0.3s ease forwards;
+}
+
+.segment:last-child { border-bottom: none; }
+
+.segment .time {
+font-size: 10px;
+font-family: ‘IBM Plex Mono’, monospace;
+color: var(–text-dim);
+margin-bottom: 2px;
+}
+
+.segment.interim {
+color: var(–text-dim);
+font-style: italic;
+}
+
+.segment .inferred {
+color: var(–warning);
+text-decoration: underline dotted var(–warning);
+cursor: help;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* API Key modal */
+.modal-overlay {
+position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(0,0,0,0.8);
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+backdrop-filter: blur(8px);
+}
+
+.modal {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 16px;
+padding: 28px;
+max-width: 440px;
+width: 100%;
+}
+
+.modal h2 {
+font-size: 18px;
+font-weight: 700;
+margin-bottom: 8px;
+}
+
+.modal p {
+font-size: 13px;
+color: var(–text-dim);
+margin-bottom: 16px;
+line-height: 1.6;
+}
+
+.modal input {
+width: 100%;
+padding: 12px 14px;
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 10px;
+color: var(–text);
+font-family: ‘IBM Plex Mono’, monospace;
+font-size: 13px;
+margin-bottom: 12px;
+outline: none;
+transition: border-color 0.2s;
+}
+
+.modal input:focus { border-color: var(–accent-ko); }
+
+.modal .submit-btn {
+width: 100%;
+padding: 12px;
+background: var(–accent-ko);
+border: none;
+border-radius: 10px;
+color: white;
+font-family: ‘Noto Sans KR’, sans-serif;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+
+.modal .submit-btn:hover { opacity: 0.85; }
+
+.modal .note {
+font-size: 11px;
+color: var(–text-dim);
+margin-top: 10px;
+text-align: center;
+}
+
+/* Error toast */
+.toast {
+position: fixed;
+bottom: 24px;
+left: 50%;
+transform: translateX(-50%) translateY(100px);
+background: var(–surface2);
+border: 1px solid var(–danger);
+border-radius: 10px;
+padding: 12px 20px;
+font-size: 13px;
+color: var(–text);
+z-index: 200;
+transition: transform 0.3s ease;
+max-width: 90%;
+text-align: center;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* No speech API warning */
+.warning-banner {
+background: linear-gradient(135deg, #f9731620, #f9731608);
+border: 1px solid var(–warning);
+border-radius: 10px;
+padding: 14px 18px;
+margin-bottom: 16px;
+font-size: 13px;
+line-height: 1.6;
+color: var(–text);
+}
+
+.warning-banner strong { color: var(–warning); }
+
+@media (max-width: 600px) {
+.header h1 { font-size: 22px; }
+.panel { min-height: 140px; }
+.controls { gap: 8px; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>실시간 통역기</h1>
+    <p>Arabic · Bengali → 한국어</p>
+  </div>
+
+  <div id="warningBanner" class="warning-banner" style="display:none;"></div>
+
+  <div class="controls">
+    <button class="lang-btn active-ar" id="btnArabic" onclick="setLang('ar')">🇸🇦 العربية</button>
+    <button class="mic-btn" id="micBtn" onclick="toggleListening()">
+      <span id="micIcon">🎙️</span>
+      <div class="ripple" id="ripple" style="display:none;"></div>
+    </button>
+    <button class="lang-btn active-bn" id="btnBengali" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">대기 중</span>
+  </div>
+
+  <div class="transcript-area">
+    <div class="panel source">
+      <div class="panel-header">
+        <span class="panel-label" id="sourceLabel">원문 (Arabic / Bengali)</span>
+        <button class="clear-btn" onclick="clearPanel('source')">지우기</button>
+      </div>
+      <div class="panel-content" id="sourceContent"></div>
+    </div>
+
+```
+<div class="panel translated">
+  <div class="panel-header">
+    <span class="panel-label">한국어 번역</span>
+    <button class="clear-btn" onclick="clearPanel('translated')">지우기</button>
+  </div>
+  <div class="panel-content" id="translatedContent"></div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- API Key Modal -->
+
+<div class="modal-overlay" id="apiModal">
+  <div class="modal">
+    <h2>🔑 API 키 설정</h2>
+    <p>
+      번역에 사용할 Google Cloud Translation API 키를 입력해 주세요.<br>
+      <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--accent-ko);">Google Cloud Console</a>에서 발급받을 수 있습니다.<br>
+      Cloud Translation API를 활성화해야 합니다.
+    </p>
+    <input type="password" id="apiKeyInput" placeholder="Google Cloud API Key" autocomplete="off">
+    <p style="margin-bottom:8px; font-size:12px;">또는 무료 대안으로 MyMemory API 사용 (키 불필요):</p>
+    <button class="submit-btn" onclick="saveApiKey()" style="margin-bottom:8px;">Google API 키 저장</button>
+    <button class="submit-btn" onclick="useFreeApi()" style="background:var(--accent-bn);">무료 API로 시작 (MyMemory)</button>
+    <p class="note">⚠️ 키는 브라우저에만 저장되며 외부로 전송되지 않습니다.</p>
+  </div>
+</div>
+
+<!-- Toast -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════
+let currentLang = 'ar'; // 'ar' or 'bn'
+let isListening = false;
+let recognition = null;
+let apiKey = '';
+let useMyMemory = false;
+let segmentId = 0;
+let translationQueue = [];
+let isTranslating = false;
+let retryCount = 0;
+const MAX_RETRIES = 3;
+
+// ═══════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════
+(function init() {
+  // Check Web Speech API
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById('warningBanner').style.display = 'block';
+    document.getElementById('warningBanner').innerHTML = `
+      <strong>⚠️ 이 브라우저는 Web Speech API를 지원하지 않습니다.</strong><br>
+      Chrome (데스크톱/Android) 브라우저를 사용해 주세요. iOS Safari에서는 제한적으로 지원됩니다.
+    `;
+    document.getElementById('micBtn').style.opacity = '0.3';
+    document.getElementById('micBtn').style.pointerEvents = 'none';
+  }
+
+  // Check stored API key
+  const stored = localStorage.getItem('gtranslate_api_key');
+  const storedMode = localStorage.getItem('translate_mode');
+  if (storedMode === 'mymemory') {
+    useMyMemory = true;
+    document.getElementById('apiModal').style.display = 'none';
+  } else if (stored) {
+    apiKey = stored;
+    document.getElementById('apiModal').style.display = 'none';
+  }
+})();
+
+// ═══════════════════════════════════════════
+// API Key
+// ═══════════════════════════════════════════
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { showToast('API 키를 입력해 주세요.'); return; }
+  apiKey = key;
+  localStorage.setItem('gtranslate_api_key', key);
+  localStorage.setItem('translate_mode', 'google');
+  useMyMemory = false;
+  document.getElementById('apiModal').style.display = 'none';
+  showToast('✅ Google API 키가 저장되었습니다.');
+}
+
+function useFreeApi() {
+  useMyMemory = true;
+  localStorage.setItem('translate_mode', 'mymemory');
+  document.getElementById('apiModal').style.display = 'none';
+  showToast('✅ 무료 MyMemory API로 시작합니다.');
+}
+
+// ═══════════════════════════════════════════
+// Language Selection
+// ═══════════════════════════════════════════
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('btnArabic').className = 'lang-btn' + (lang === 'ar' ? ' active-ar' : '');
+  document.getElementById('btnBengali').className = 'lang-btn' + (lang === 'bn' ? ' active-bn' : '');
+
+  // If already listening, restart with new lang
+  if (isListening) {
+    stopListening();
+    setTimeout(() => startListening(), 300);
+  }
+}
+
+// ═══════════════════════════════════════════
+// Speech Recognition
+// ═══════════════════════════════════════════
+function createRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+
+  const rec = new SR();
+  rec.lang = currentLang === 'ar' ? 'ar-SA' : 'bn-BD';
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.maxAlternatives = 3;
+
+  let lastFinalTranscript = '';
+
+  rec.onresult = (event) => {
+    let interim = '';
+    let final = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        final += transcript + ' ';
+      } else {
+        interim += transcript;
+      }
+    }
+
+    // Show interim
+    if (interim) {
+      updateInterim(interim);
+    }
+
+    // Process final results
+    if (final.trim() && final.trim() !== lastFinalTranscript) {
+      lastFinalTranscript = final.trim();
+      addSourceSegment(final.trim());
+      queueTranslation(final.trim());
+      clearInterim();
+    }
+  };
+
+  rec.onerror = (event) => {
+    console.warn('Speech error:', event.error);
+    if (event.error === 'no-speech') {
+      // Silently restart
+      if (isListening) restartRecognition();
+    } else if (event.error === 'audio-capture') {
+      showToast('🎤 마이크를 찾을 수 없습니다. 마이크 권한을 확인해 주세요.');
+      stopListening();
+    } else if (event.error === 'not-allowed') {
+      showToast('🎤 마이크 접근이 거부되었습니다. 브라우저 설정에서 허용해 주세요.');
+      stopListening();
+    } else if (event.error === 'network') {
+      showToast('🌐 네트워크 오류. 인터넷 연결을 확인해 주세요.');
+      if (isListening) setTimeout(() => restartRecognition(), 2000);
+    } else {
+      if (isListening) restartRecognition();
+    }
+  };
+
+  rec.onend = () => {
+    // Auto-restart if still supposed to be listening
+    if (isListening) {
+      restartRecognition();
+    }
+  };
+
+  return rec;
+}
+
+function restartRecognition() {
+  if (!isListening) return;
+  try {
+    if (recognition) recognition.abort();
+  } catch(e) {}
+  setTimeout(() => {
+    if (isListening) {
+      recognition = createRecognition();
+      if (recognition) {
+        try { recognition.start(); } catch(e) {}
+      }
+    }
+  }, 200);
+}
+
+function startListening() {
+  recognition = createRecognition();
+  if (!recognition) return;
+
+  try {
+    recognition.start();
+    isListening = true;
+    updateUI();
+  } catch(e) {
+    showToast('음성 인식 시작 실패: ' + e.message);
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+  clearInterim();
+  updateUI();
+}
+
+function toggleListening() {
+  if (isListening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+}
+
+function updateUI() {
+  const btn = document.getElementById('micBtn');
+  const ripple = document.getElementById('ripple');
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+
+  if (isListening) {
+    btn.classList.add('listening');
+    ripple.style.display = 'block';
+    dot.classList.add('active');
+    text.textContent = `인식 중 (${currentLang === 'ar' ? 'العربية' : 'বাংলা'})`;
+  } else {
+    btn.classList.remove('listening');
+    ripple.style.display = 'none';
+    dot.classList.remove('active');
+    text.textContent = '대기 중';
+  }
+}
+
+// ═══════════════════════════════════════════
+// Transcript UI
+// ═══════════════════════════════════════════
+function timeStamp() {
+  const now = new Date();
+  return now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function addSourceSegment(text) {
+  const el = document.createElement('div');
+  el.className = 'segment';
+  el.id = `src-${++segmentId}`;
+  el.innerHTML = `<div class="time">${timeStamp()}</div><div>${escapeHtml(text)}</div>`;
+  document.getElementById('sourceContent').appendChild(el);
+  scrollToBottom('sourceContent');
+}
+
+function addTranslatedSegment(text, hasInference) {
+  const el = document.createElement('div');
+  el.className = 'segment';
+  let html = `<div class="time">${timeStamp()}</div><div>`;
+  if (hasInference) {
+    html += text; // already contains <span class="inferred"> markup
+  } else {
+    html += escapeHtml(text);
+  }
+  html += '</div>';
+  el.innerHTML = html;
+  document.getElementById('translatedContent').appendChild(el);
+  scrollToBottom('translatedContent');
+}
+
+let interimEl = null;
+function updateInterim(text) {
+  if (!interimEl) {
+    interimEl = document.createElement('div');
+    interimEl.className = 'segment interim';
+    document.getElementById('sourceContent').appendChild(interimEl);
+  }
+  interimEl.innerHTML = `<div class="time">${timeStamp()} (인식 중...)</div><div>${escapeHtml(text)}</div>`;
+  scrollToBottom('sourceContent');
+}
+
+function clearInterim() {
+  if (interimEl && interimEl.parentNode) {
+    interimEl.parentNode.removeChild(interimEl);
+  }
+  interimEl = null;
+}
+
+function clearPanel(panel) {
+  if (panel === 'source') {
+    document.getElementById('sourceContent').innerHTML = '';
+  } else {
+    document.getElementById('translatedContent').innerHTML = '';
+  }
+}
+
+function scrollToBottom(id) {
+  const el = document.getElementById(id);
+  el.scrollTop = el.scrollHeight;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ═══════════════════════════════════════════
+// Translation with Queue & Retry
+// ═══════════════════════════════════════════
+function queueTranslation(text) {
+  translationQueue.push(text);
+  processQueue();
+}
+
+async function processQueue() {
+  if (isTranslating || translationQueue.length === 0) return;
+  isTranslating = true;
+
+  const text = translationQueue.shift();
+  try {
+    const translated = await translateText(text, currentLang, 'ko');
+    retryCount = 0;
+    addTranslatedSegment(translated.text, translated.hasInference);
+  } catch(err) {
+    console.error('Translation error:', err);
+    if (retryCount < MAX_RETRIES) {
+      retryCount++;
+      translationQueue.unshift(text); // put back
+      showToast(`번역 재시도 중... (${retryCount}/${MAX_RETRIES})`);
+      await sleep(1000 * retryCount); // exponential-ish backoff
+    } else {
+      retryCount = 0;
+      addTranslatedSegment('[번역 실패] ' + text, false);
+      showToast('번역 API 오류. 잠시 후 다시 시도합니다.');
+    }
+  }
+
+  isTranslating = false;
+  processQueue();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function translateText(text, sourceLang, targetLang) {
+  // Clean up / detect gaps
+  const cleaned = preprocessText(text, sourceLang);
+
+  if (useMyMemory) {
+    return await translateMyMemory(cleaned.text, sourceLang, targetLang, cleaned.hadGaps);
+  } else {
+    return await translateGoogle(cleaned.text, sourceLang, targetLang, cleaned.hadGaps);
+  }
+}
+
+function preprocessText(text, lang) {
+  // Detect potential recognition gaps: consecutive punctuation, lone chars, question marks
+  let hadGaps = false;
+  let processed = text;
+
+  // Remove excessive repetition (speech recognition stutter)
+  processed = processed.replace(/(.{3,}?)\1{2,}/g, '$1');
+
+  // Detect suspiciously short fragments mixed with longer text
+  const words = processed.split(/\s+/);
+  if (words.length > 3) {
+    const veryShort = words.filter(w => w.length === 1 && !/[.،؟!,?]/.test(w));
+    if (veryShort.length > words.length * 0.4) {
+      hadGaps = true;
+    }
+  }
+
+  // Detect garbled characters (common in poor Arabic/Bengali recognition)
+  const suspiciousChars = (processed.match(/[^\u0600-\u06FF\u0980-\u09FF\s\d.,!?،؟\-()]/g) || []).length;
+  if (suspiciousChars > processed.length * 0.3) {
+    hadGaps = true;
+  }
+
+  return { text: processed.trim(), hadGaps };
+}
+
+// ── Google Translate API ──
+async function translateGoogle(text, source, target, hadGaps) {
+  const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+
+  let prompt = text;
+  // If gaps detected, ask for contextual translation
+  if (hadGaps) {
+    prompt = `[Context: This is a speech recognition transcript that may have errors or gaps. Please translate to Korean naturally, inferring any missing or garbled parts from context. Original (${source === 'ar' ? 'Arabic' : 'Bengali'}): "${text}"]`;
+  }
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      q: prompt,
+      source: hadGaps ? 'en' : source,
+      target: target,
+      format: 'text'
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `HTTP ${resp.status}`);
+  }
+
+  const data = await resp.json();
+  const translated = data.data.translations[0].translatedText;
+
+  if (hadGaps) {
+    return {
+      text: `<span class="inferred" title="음성 인식 품질 저하로 추론된 번역">${escapeHtml(translated)}</span>`,
+      hasInference: true
+    };
+  }
+
+  return { text: translated, hasInference: false };
+}
+
+// ── MyMemory Free API ──
+async function translateMyMemory(text, source, target, hadGaps) {
+  const langPair = `${source}|${target}`;
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(langPair)}`;
+
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+  const data = await resp.json();
+
+  if (data.responseStatus !== 200 && data.responseStatus !== '200') {
+    // Fallback: try via English pivot
+    return await translateViaPivot(text, source, target, hadGaps);
+  }
+
+  let translated = data.responseData.translatedText;
+
+  // MyMemory sometimes returns UPPERCASE or the original
+  if (translated === text || translated === text.toUpperCase()) {
+    return await translateViaPivot(text, source, target, hadGaps);
+  }
+
+  if (hadGaps) {
+    return {
+      text: `<span class="inferred" title="음성 인식 품질 저하로 추론된 번역">${escapeHtml(translated)}</span>`,
+      hasInference: true
+    };
+  }
+
+  return { text: translated, hasInference: false };
+}
+
+// Pivot through English if direct fails
+async function translateViaPivot(text, source, target, hadGaps) {
+  // Step 1: source → en
+  const url1 = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|en`;
+  const resp1 = await fetch(url1);
+  const data1 = await resp1.json();
+  let english = data1?.responseData?.translatedText || text;
+
+  // Step 2: en → ko
+  const url2 = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(english)}&langpair=en|${target}`;
+  const resp2 = await fetch(url2);
+  const data2 = await resp2.json();
+  let korean = data2?.responseData?.translatedText || english;
+
+  if (hadGaps || korean === english) {
+    return {
+      text: `<span class="inferred" title="영어 중간 번역을 경유한 추론 번역">${escapeHtml(korean)}</span>`,
+      hasInference: true
+    };
+  }
+
+  return { text: korean, hasInference: false };
+}
+
+// ═══════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+</script>
+
+</body>
+</html>
