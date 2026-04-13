@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broiler Performance Dashboard</title>
+    <title>Pathway Advisor Kit</title>
+    <meta name="description" content="Pathway Advisor Kit — Broiler Performance Dashboard & Product Wizard">
+    <meta property="og:title" content="Pathway Advisor Kit">
+    <meta property="og:description" content="Broiler Performance Dashboard & Product Recommendation Wizard">
+    <meta property="og:type" content="website">
+    <!-- og:image: 로고 URL 확정 후 아래에 추가 -->
+    <!-- <meta property="og:image" content="https://...your-logo-url..."> -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -163,13 +169,16 @@
 </head>
 <body>
 <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <strong style="font-size:1.1em; color:#004a99; letter-spacing:-0.3px;">Pathway Advisor Kit</strong>
+        <span style="font-size:0.75em; color:#aaa; font-family:monospace;">v.20260413</span>
+    </div>
     <div class="tab-bar">
         <div class="tab-btn active" onclick="moveTab(0)">Performance Dashboard</div>
         <div class="tab-btn" onclick="moveTab(1)">Application Simulation</div>
         <div class="tab-btn" onclick="moveTab(2)">ProBe-Bac WE Action Plan</div>
         <div class="tab-btn" onclick="moveTab(3)">Lipidol Cost Saving</div>
-<div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
-
+        <div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
     </div>
 
     <div id="tab0" class="tab-content active">
