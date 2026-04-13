@@ -651,28 +651,17 @@ function getReasonComment(detail,productName){
 }
 
 function getRec(a){
-  const d=a.detail||'general_perf',b=a.budget||'balanced',sp=a.species||'broiler',cn=a.concern||'performance';
-  const rt=tagMap[d]||['performance'];
-  const isStress=cn==='stress'||['heat','vaccination','disease','mortality'].includes(d);
-  const isPerf=cn==='performance'||['fcr','weight','uniformity','growth','general_perf'].includes(d);
-
-  let s=Object.entries(productDB).map(([n,p])=>{
-    let sc=0;rt.forEach(t=>{if(p.tags.includes(t))sc+=2;});
-    if(b==='economy'&&['Lipidol','Genikan','StreX'].includes(n))sc+=1;
-    if(b==='premium'&&['ProBe-Bac','YeaMune-UP','Endopower','Q-Life'].includes(n))sc+=1;
-    if(sp==='aqua'&&n==='Q-Life')sc=0;
-    // Priority boost: StreX always #1 for stress (except disease/mortality -> ProBe-Bac)
-    if(isStress&&n==='StreX'&&d!=='disease'&&d!=='mortality')sc+=20;
-    // Priority boost: ProBe-Bac #1 for disease challenge & mortality
-    if((d==='disease'||d==='mortality')&&n==='ProBe-Bac')sc+=20;
-    if((d==='disease'||d==='mortality')&&n==='StreX')sc+=10;
-    // Priority boost: Lipidol #1, Growmax/Endopower #2 for performance
-    if(isPerf&&n==='Lipidol')sc+=20;
-    if(isPerf&&(n==='Growmax'||n==='Endopower'))sc+=10;
-    return{name:n,score:sc,...p,reason:getReasonComment(d,n)};
-  });
-  s.sort((a,b)=>b.score-a.score);
-  return s.filter(x=>x.score>0).slice(0,3);
+  const d=a.detail||'general_perf',sp=a.species||'broiler';
+  // reasonMap의 정의 순서 = 추천 우선순위
+  const results=[];
+  for(const [key,reason] of Object.entries(reasonMap)){
+    const [detail,name]=key.split('|');
+    if(detail!==d) continue;
+    if(!productDB[name]) continue;
+    if(sp==='aqua'&&name==='Q-Life') continue;
+    results.push({name,score:100-results.length,...productDB[name],reason});
+  }
+  return results.slice(0,3);
 }
 
 /* ===== SPECIAL FLOWS ===== */
