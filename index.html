@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broiler Performance Dashboard</title>
+    <title>Pathway Advisor Kit</title>
+    <meta name="description" content="Pathway Advisor Kit — Broiler Performance Dashboard & Product Wizard">
+    <meta property="og:title" content="Pathway Advisor Kit">
+    <meta property="og:description" content="Broiler Performance Dashboard & Product Recommendation Wizard">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://book4241-cloud.github.io/Puppy-papa/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -11,7 +16,7 @@
     <style>
         /* Common Styles */
         body { font-family: sans-serif; padding: 1px; line-height: 1.2; background-color: #f8f9fa; }
-        .container { max-width: 1200px; margin: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: white; }
+        .container { max-width: 1200px; margin: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: white; position: relative; overflow: hidden; }
         .input-group { margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-radius: 5px; }
         .data-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         @media (max-width: 768px) { 
@@ -163,13 +168,43 @@
 </head>
 <body>
 <div class="container">
+    <!-- Header: Pathway logo + app name + version -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:8px 6px 12px; border-bottom:2px solid #e4ecf7;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <!-- pi mark (® 제거) -->
+            <svg width="40" height="50" viewBox="0 0 84 104" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="piG_h" x1="0.35" y1="0" x2="0.35" y2="1">
+                        <stop offset="0%" stop-color="#0dbfca"/>
+                        <stop offset="100%" stop-color="#0c3360"/>
+                    </linearGradient>
+                </defs>
+                <!-- p: left stem -->
+                <rect x="4" y="35" width="18" height="65" rx="9" fill="url(#piG_h)"/>
+                <!-- p: bowl -->
+                <circle cx="38" cy="65" r="30" fill="url(#piG_h)"/>
+                <!-- p: counter (white cutout) -->
+                <circle cx="38" cy="65" r="17" fill="white"/>
+                <!-- i: dot -->
+                <circle cx="72" cy="14" r="12" fill="url(#piG_h)"/>
+                <!-- i: stem -->
+                <rect x="65" y="32" width="15" height="68" rx="7.5" fill="url(#piG_h)"/>
+            </svg>
+            <div style="line-height:1.2;">
+                <div style="font-size:1.15em; font-weight:800; color:#0c3360; letter-spacing:2px;">PATHWAY</div>
+                <div style="font-size:0.58em; font-weight:600; color:#0c3360; letter-spacing:4px;">INTERMEDIATES</div>
+            </div>
+            <div style="width:1px; height:32px; background:#ccd6e8; margin:0 6px;"></div>
+            <div style="font-size:0.92em; font-weight:700; color:#2d6cdf; letter-spacing:0.3px;">Advisor Kit</div>
+        </div>
+        <span style="font-size:0.7em; color:#b8c2d0; font-family:monospace; letter-spacing:0.5px;">v.20260413</span>
+    </div>
     <div class="tab-bar">
         <div class="tab-btn active" onclick="moveTab(0)">Performance Dashboard</div>
         <div class="tab-btn" onclick="moveTab(1)">Application Simulation</div>
         <div class="tab-btn" onclick="moveTab(2)">ProBe-Bac WE Action Plan</div>
         <div class="tab-btn" onclick="moveTab(3)">Lipidol Cost Saving</div>
-<div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
-
+        <div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
     </div>
 
     <div id="tab0" class="tab-content active">
@@ -449,6 +484,23 @@
             
         </div>
     </div>
+
+<!-- Background watermark (bottom-right of container) -->
+<div style="position:absolute; bottom:-30px; right:-30px; opacity:0.055; pointer-events:none; user-select:none; z-index:0;">
+    <svg width="260" height="320" viewBox="0 0 84 104" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="piG_w" x1="0.35" y1="0" x2="0.35" y2="1">
+                <stop offset="0%" stop-color="#0dbfca"/>
+                <stop offset="100%" stop-color="#0c3360"/>
+            </linearGradient>
+        </defs>
+        <rect x="4" y="35" width="18" height="65" rx="9" fill="url(#piG_w)"/>
+        <circle cx="38" cy="65" r="30" fill="url(#piG_w)"/>
+        <circle cx="38" cy="65" r="17" fill="white"/>
+        <circle cx="72" cy="14" r="12" fill="url(#piG_w)"/>
+        <rect x="65" y="32" width="15" height="68" rx="7.5" fill="url(#piG_w)"/>
+    </svg>
+</div>
 
 <div id="tab4" class="tab-content">
 
