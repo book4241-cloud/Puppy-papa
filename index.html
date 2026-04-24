@@ -176,8 +176,16 @@
     .fld-row, .fld-row3,
     .sc-grid, .cost-row, .rec-grid { grid-template-columns: 1fr !important; }
 
-    /* Ingredient: keep 2-col so it doesn't feel too sparse */
-    .g4 { grid-template-columns: 1fr 1fr !important; }
+    /* Ingredient: keep 2-col, top-align so unequal heights don't create gaps */
+    .g4 { grid-template-columns: 1fr 1fr !important; align-items: start; }
+
+    /* Reorder blocks so similar-height blocks share a row:
+       Row 1: Full Fat Soya (4 fields) | Lipidol+General (3 fields)
+       Row 2: Soybean Oil (2 fields)   | Soybean Meal (1 field)       */
+    .g4 > div:nth-child(1) { order: 1; }
+    .g4 > div:nth-child(2) { order: 3; }
+    .g4 > div:nth-child(3) { order: 4; }
+    .g4 > div:nth-child(4) { order: 2; }
     /* Scenario cards: side-by-side labels stay legible */
     .sc-card { padding: 12px 10px; }
     .sc-title { font-size: 11px; margin-bottom: 10px; }
