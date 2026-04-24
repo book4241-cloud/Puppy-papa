@@ -149,6 +149,85 @@
     #report { display: block !important; margin: 0; }
     .rpt-hdr { border-radius: 0; }
   }
+
+  /* ── RESPONSIVE — Tablet ── */
+  @media (max-width: 900px) {
+    .g4 { grid-template-columns: 1fr 1fr; }
+    .hdr { padding: 14px 20px; }
+    .wrap { padding: 20px 16px 48px; }
+  }
+
+  /* ── RESPONSIVE — Mobile (iPhone 16: 393px) ── */
+  @media (max-width: 640px) {
+    body { font-size: 13px; }
+
+    /* Header */
+    .hdr { padding: 12px 14px; gap: 10px; flex-wrap: wrap; }
+    .hdr h1 { font-size: 13px; }
+    .hdr span { font-size: 11px; }
+    .hdr-logo { width: 30px; height: 30px; font-size: 13px; }
+
+    /* Layout */
+    .wrap { padding: 12px 10px 36px; }
+    .card { padding: 14px 12px; }
+
+    /* Collapse all multi-column grids to single column */
+    .g2, .g3, .g4,
+    .fld-row, .fld-row3,
+    .sc-grid, .cost-row, .rec-grid { grid-template-columns: 1fr !important; }
+
+    /* Scenario cards: side-by-side labels stay legible */
+    .sc-card { padding: 12px 10px; }
+    .sc-title { font-size: 11px; margin-bottom: 10px; }
+
+    /* Inputs: larger touch target */
+    .inp-wrap input {
+      padding: 11px 40px 11px 11px;
+      font-size: 15px;
+      border-radius: 8px;
+    }
+    .inp-wrap .u { font-size: 11px; right: 10px; }
+    .fld label { font-size: 12px; margin-bottom: 4px; }
+    .fld { margin-bottom: 12px; }
+
+    /* Block title */
+    .blk-title { font-size: 12px; }
+
+    /* Report header: stack vertically */
+    .rpt-hdr { padding: 16px 14px; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .rpt-hdr h2 { font-size: 16px; }
+    .btn-print { width: 100%; text-align: center; padding: 10px; }
+
+    /* Tables: horizontal scroll */
+    #tbl-baseline, #tbl-scenario {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+    }
+    table { font-size: 11.5px; }
+    th, td { padding: 8px 10px; }
+
+    /* Cost boxes */
+    .cbox .cval { font-size: 18px; }
+
+    /* Efficiency bar */
+    .eff-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 14px; }
+
+    /* Generate button */
+    .btn-gen { font-size: 15px; padding: 16px; margin-top: 16px; }
+
+    /* Right-aligned version info in header */
+    .hdr > div:last-child { margin-left: auto; }
+
+    /* auto-row: prevent text from being squeezed */
+    .auto-lbl { font-size: 11.5px; }
+    .auto-val { font-size: 12.5px; }
+
+    /* Summary note boxes */
+    .note { font-size: 12.5px; }
+    .disclaimer { font-size: 11.5px; padding: 12px 12px; }
+  }
 </style>
 </head>
 <body>
@@ -288,13 +367,13 @@
     <!-- S1 -->
     <div class="card">
       <div class="sec-head">1. Baseline — Current Diet Ingredient Overview</div>
-      <table id="tbl-baseline"></table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table id="tbl-baseline"></table></div>
     </div>
 
     <!-- S2 -->
     <div class="card" style="margin-top:16px">
       <div class="sec-head">2. Scenario Comparison — Lipidol Application with Ingredient Adjustment</div>
-      <table id="tbl-scenario"></table>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table id="tbl-scenario"></table></div>
     </div>
 
     <!-- Disclaimer -->
@@ -431,7 +510,7 @@ function renderSummary(d){
     </div>`;
   }
 
-  el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:16px;">
+  el.innerHTML = `<div class="sc-grid" style="margin-top:16px;">
     ${box('A : Full Fat Soya Reduction','#1A6B47',[
       {sign:'−',label:'Full Fat Soya',val:`${fmt(sa.ffs_red,1)} kg`},
       {sign:'+',label:'Lipidol',val:`${fmtK(v('sa_lip'))} g`},
