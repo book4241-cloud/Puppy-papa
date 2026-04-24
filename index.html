@@ -171,11 +171,13 @@
     .wrap { padding: 12px 10px 36px; }
     .card { padding: 14px 12px; }
 
-    /* Collapse all multi-column grids to single column */
-    .g2, .g3, .g4,
+    /* Collapse multi-column grids to single column */
+    .g2, .g3,
     .fld-row, .fld-row3,
     .sc-grid, .cost-row, .rec-grid { grid-template-columns: 1fr !important; }
 
+    /* Ingredient: keep 2-col so it doesn't feel too sparse */
+    .g4 { grid-template-columns: 1fr 1fr !important; }
     /* Scenario cards: side-by-side labels stay legible */
     .sc-card { padding: 12px 10px; }
     .sc-title { font-size: 11px; margin-bottom: 10px; }
@@ -309,6 +311,7 @@
           <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sa_cp_auto">—</span></div>
           <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sa_sbm_auto">—</span></div>
         </div>
+        <div id="sum-a"></div>
       </div>
 
       <!-- B -->
@@ -327,6 +330,7 @@
           <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sb_cp_auto">—</span></div>
           <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sb_sbm_auto">—</span></div>
         </div>
+        <div id="sum-b"></div>
       </div>
 
       <!-- C -->
@@ -346,10 +350,10 @@
           <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sc_cp_auto">—</span></div>
           <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sc_sbm_auto">—</span></div>
         </div>
+        <div id="sum-c"></div>
       </div>
 
     </div>
-    <div id="sc-summary"></div>
   </div>
 
   <button class="btn-gen" onclick="generateReport()">Generate Report →</button>
@@ -495,41 +499,39 @@ function autoCalc(){
 }
 
 function renderSummary(d){
-  const {sa,sb,sc,ffs_kg,syo_l,diet}=d;
-  const el=document.getElementById('sc-summary');
-  if(!el) return;
+  const {sa,sb,sc}=d;
 
-  function box(label, color, rows){
-    return `<div style="background:white;border:1px solid var(--border);border-top:3px solid ${color};border-radius:var(--r);padding:14px;font-size:12px;">
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:${color};margin-bottom:10px;">${label}</div>
-      ${rows.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);">
-        <span style="font-size:13px;font-weight:700;color:${r.sign==='+' ? '#1A6B47':'#B03020'};width:16px;flex-shrink:0;">${r.sign}</span>
-        <span style="color:var(--muted);flex:1;">${r.label}</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-weight:500;">${r.val}</span>
-      </div>`).join('')}
-    </div>`;
+  function rows(items){
+    return items.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px;font-weight:700;color:${r.sign==='+' ? '#1A6B47':'#B03020'};width:16px;flex-shrink:0;">${r.sign}</span>
+      <span style="color:var(--muted);flex:1;">${r.label}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-weight:500;">${r.val}</span>
+    </div>`).join('');
   }
 
-  el.innerHTML = `<div class="sc-grid" style="margin-top:16px;">
-    ${box('A : Full Fat Soya Reduction','#1A6B47',[
-      {sign:'−',label:'Full Fat Soya',val:`${fmt(sa.ffs_red,1)} kg`},
-      {sign:'+',label:'Lipidol',val:`${fmtK(v('sa_lip'))} g`},
-      {sign:'+',label:'Soybean Meal',val:`~${fmt(sa.sbm,1)} kg`},
-      {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
-    ])}
-    ${box('B : Soybean Oil Reduction','#A85500',[
-      {sign:'−',label:'Soybean Oil',val:`${fmt(sb.syo_red_l,2)} L`},
-      {sign:'+',label:'Lipidol',val:`${fmtK(v('sb_lip'))} g`},
+  function injectBox(id, color, items){
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=`<div style="margin-top:12px;border-top:2px solid ${color};padding-top:10px;font-size:12px;">${rows(items)}</div>`;
+  }
 
-    ])}
-    ${box('C : Both Reduction','#B03020',[
-      {sign:'−',label:'Full Fat Soya',val:`${fmt(sc.ffs_red,1)} kg`},
-      {sign:'−',label:'Soybean Oil',val:`${fmt(sc.syo_set,1)} L`},
-      {sign:'+',label:'Lipidol',val:`${fmtK(v('sc_lip'))} g`},
-      {sign:'+',label:'Soybean Meal',val:`~${fmt(sc.sbm,1)} kg`},
-      {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
-    ])}
-  </div>`;
+  injectBox('sum-a','#1A6B47',[
+    {sign:'−',label:'Full Fat Soya',val:`${fmt(sa.ffs_red,1)} kg`},
+    {sign:'+',label:'Lipidol',val:`${fmtK(v('sa_lip'))} g`},
+    {sign:'+',label:'Soybean Meal',val:`~${fmt(sa.sbm,1)} kg`},
+    {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
+  ]);
+  injectBox('sum-b','#A85500',[
+    {sign:'−',label:'Soybean Oil',val:`${fmt(sb.syo_red_l,2)} L`},
+    {sign:'+',label:'Lipidol',val:`${fmtK(v('sb_lip'))} g`},
+  ]);
+  injectBox('sum-c','#B03020',[
+    {sign:'−',label:'Full Fat Soya',val:`${fmt(sc.ffs_red,1)} kg`},
+    {sign:'−',label:'Soybean Oil',val:`${fmt(sc.syo_set,1)} L`},
+    {sign:'+',label:'Lipidol',val:`${fmtK(v('sc_lip'))} g`},
+    {sign:'+',label:'Soybean Meal',val:`~${fmt(sc.sbm,1)} kg`},
+    {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
+  ]);
 }
 
 function generateReport(){
