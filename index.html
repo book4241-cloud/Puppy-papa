@@ -145,7 +145,7 @@
         /* Tabs */
         .tab-bar { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 2px solid #dee2e6; }
         .tab-select-wrap { display: none; position: relative; }
-        .tab-select-wrap::after { content: "▼"; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #007bff; font-size: 12px; }
+        .tab-select-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #007bff; font-size: 13px; font-weight: bold; z-index: 2; }
         .tab-select { width: 100%; padding: 11px 40px 11px 14px; font-size: 15px; font-weight: 600; color: #007bff; background: #fff; border: 2px solid #007bff; border-radius: 8px; cursor: pointer; -webkit-appearance: none; appearance: none; }
         .tab-btn { padding: 12px 25px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #eee; border-radius: 8px 8px 0 0; font-weight: bold; }
         .tab-btn.active { background: #fff; color: #007bff; border-bottom: 3px solid #fff; position: relative; top: 2px; }
@@ -531,6 +531,7 @@
             <option value="4">Product Wizard</option>
             <option value="5">Lipidol Report</option>
         </select>
+        <span class="tab-select-arrow">▼</span>
     </div>
 
     <div id="tab0" class="tab-content active">
