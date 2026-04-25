@@ -7,7 +7,7 @@
   "theme_color": "#007bff",
   "icons": [
     {
-      "src": "/Puppy-papa/apple-touch-icon.png",
+      "src": "/Puppy-papa/pwa-icon-v2.png",
       "sizes": "180x180",
       "type": "image/png"
     }
