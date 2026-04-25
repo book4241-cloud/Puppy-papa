@@ -54,6 +54,11 @@
             /* res-card spanning 2 columns → full width */
             .res-card { grid-column: 1 !important; }
 
+            /* Lipidol Cost Saving - Oil + ME 나란히 유지 */
+            .lipidol-results { grid-template-columns: 1fr 1fr !important; }
+            .lipidol-results .res-card { grid-column: auto !important; }
+            .lipidol-results .res-card:first-child { grid-column: 1 / span 2 !important; }
+
             /* Chart: allow horizontal scroll if needed */
             #chartContainer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
             #chartContainer canvas { max-width: 100%; height: auto !important; }
@@ -112,23 +117,84 @@
                 flex-wrap: nowrap;
             }
 
-            /* ── Fix 2: Ingredient 블록 사이 점선 구분선 (2번 사진) ── */
+            /* ── Fix 2: Ingredient 블록 점선 구분 + 배경 ── */
             #tab5 .g4 > div {
-                border: 1px dashed #d0d4dc;
-                border-radius: 8px;
-                padding: 10px 8px;
+                border: 1px dashed #b8ddc8;
+                border-radius: 10px;
+                padding: 12px 10px;
+                background: #f7fdf9;
+            }
+            #tab5 .blk-title {
+                font-size: 12px !important;
+                letter-spacing: 0.05em;
+                margin-bottom: 10px !important;
+            }
+            #tab5 .inp-wrap input {
+                font-size: 15px !important;
+                padding: 9px 38px 9px 10px !important;
+            }
+            #tab5 .fld label {
+                font-size: 12px !important;
+                margin-bottom: 4px !important;
+            }
+            /* 섹션 헤더 강조 */
+            #tab5 .sec-head {
+                font-size: 12px !important;
+                color: #1a9b5a !important;
+                font-weight: 700 !important;
+                margin-bottom: 14px !important;
+                padding-bottom: 6px;
+                border-bottom: 2px solid #d0f0e0;
+            }
+            #tab5 .sec-head::after { display: none; }
+            /* 시나리오 카드 - 세로 1열 + 강조 */
+            #tab5 .sc-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            #tab5 .sc-card {
+                border-radius: 10px !important;
+                padding: 14px 12px !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+            }
+            #tab5 .sc-title {
+                font-size: 11px !important;
+                margin-bottom: 10px !important;
+            }
+            #tab5 .auto-val {
+                font-size: 13px !important;
+                font-weight: 600 !important;
+            }
+            #tab5 .auto-lbl {
+                font-size: 11px !important;
             }
 
-            /* ── Fix 3: Product Wizard 제품카드 레이아웃 (3번 사진) ── */
+            /* ── Fix 3: Product Wizard 제품카드 - 번호 위, 이미지 아래, 텍스트 우측 ── */
             .rec-product {
-                grid-template-columns: auto 52px 1fr !important;
-                gap: 8px !important;
+                grid-template-columns: 64px 1fr !important;
+                grid-template-rows: auto 1fr !important;
+                gap: 6px 12px !important;
                 padding: 14px 10px !important;
+                align-items: start !important;
             }
-            .rec-img { width: 48px !important; }
-            /* 제품 이미지 아래 캡션 숨김 (좁은 컬럼에서 줄글 방지) */
-            [style*="max-width:90px"] { display: none !important; }
-            /* 제품 설명 폰트 축소 */
+            .rec-rank {
+                grid-column: 1 !important;
+                grid-row: 1 !important;
+                justify-self: center;
+            }
+            .rec-product > div:nth-child(2) {
+                grid-column: 1 !important;
+                grid-row: 2 !important;
+                justify-self: center;
+                align-self: start;
+            }
+            .rec-product > div:nth-child(3) {
+                grid-column: 2 !important;
+                grid-row: 1 / 3 !important;
+                align-self: start;
+            }
+            .rec-img { width: 52px !important; height: auto !important; }
+            [style*="max-width:90px"] { display: block !important; font-size: 9px !important; max-width: 52px !important; text-align: center; }
             .rec-reason { font-size: 12px !important; line-height: 1.5 !important; }
             .rec-protocol p { font-size: 12px !important; }
             .rec-protocol h5 { font-size: 11px !important; letter-spacing: 0.04em; }
@@ -712,7 +778,7 @@
         <div class="lipidol-layout">
             
             <div class="lipidol-outputs">
-                <div class="res-container" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px; margin-top: 0;">
+                <div class="res-container lipidol-results" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px; margin-top: 0;">
                     <div class="res-card target" style="grid-column: 1 / span 2; padding: 25px 20px; background-color: #f0fdf4; border-left-color: #28a745;">
                         <h4 style="font-size: 1.2em; color: #28a745; margin-bottom: 5px; border:none;">Cost Benefit</h4>
                         <div class="res-val" style="color: #28a745; font-size: 3.2em; text-align: center;">
