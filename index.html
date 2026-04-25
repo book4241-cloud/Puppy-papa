@@ -182,7 +182,11 @@
 
             /* ProBe-Bac - Full Period + Package Settings 나란히 */
             .pb-dual-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            .pb-dual-wrap .res-card { margin-bottom: 0; }
+            .pb-dual-wrap .res-card { margin-bottom: 0; padding: 12px 10px !important; }
+            .pb-dual-wrap h4 { font-size: 0.78em !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .pb-dual-wrap .we-total .res-val { font-size: 2.2em !important; }
+            .pb-dual-wrap label { font-size: 0.75em !important; }
+            .pb-dual-wrap input[type="text"] { font-size: 14px !important; padding: 6px 8px !important; }
             #tab2 h2 { font-size: 1.3em !important; }
 
             /* Lipidol - Oil 카드 테두리 두껍게 */
@@ -741,11 +745,11 @@
             <div class="res-card pkg-settings">
                 <h4>Package Settings</h4>
                 <div class="field-box">
-                    <label>Unit Name (e.g. Pouch):</label>
+                    <label>Unit Name:</label>
                     <input type="text" id="pbPkgName" value="Pouch" oninput="calcPB()">
                 </div>
                 <div class="field-box">
-                    <label>Grams per Unit (g):</label>
+                    <label>Grams / Unit (g):</label>
                     <input type="text" inputmode="decimal" id="pbPkgGrams" value="500" oninput="formatNum(this); calcPB()">
                 </div>
                 <div class="field-box" style="margin-top: 15px;">
@@ -817,13 +821,13 @@
 
 
                     <div class="res-card warning" style="padding: 15px; border-left-color: #ff9800; background-color: #fffaf0;">
-                        <h4 style="margin-bottom: 5px; border:none; color: #ff9800;">Oil Reduction</h4>
+                        <h4 style="margin-bottom: 5px; border:none; color: #ff9800; text-align:center;">Oil Reduction</h4>
                         <div class="res-val" style="color: #ff9800; font-size: 1.8em; text-align: center;">
                             <span id="lipidolOilReduction">0.00</span> <span class="unit">kg/MT</span>
                         </div>
                     </div>
                     <div class="res-card standard" style="padding: 15px; border-left-color: #6c757d; background-color: #f8f9fa;">
-                        <h4 style="margin-bottom: 5px; border:none;">ME Reduction</h4>
+                        <h4 style="margin-bottom: 5px; border:none; text-align:center;">ME Reduction</h4>
                         <div class="res-val" style="color: #333; font-size: 1.8em; text-align: center;">
                             <span id="lipidolMEReduction">50</span> <span class="unit" style="text-transform:none;">Kcal/kg</span>
                         </div>
