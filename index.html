@@ -39,7 +39,8 @@
             /* Inputs & selects: 16px prevents iOS auto-zoom */
             input[type="number"],
             input[type="text"],
-            select { font-size: 16px !important; padding: 10px 8px !important; }
+            select:not(.tab-select) { font-size: 16px !important; padding: 10px 8px !important; }
+            .tab-select { font-size: 16px !important; padding: 11px 40px 11px 14px !important; }
 
             /* Data grid: 2 cols already at 768, keep */
             .data-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -144,7 +145,8 @@
         /* Tabs */
         .tab-bar { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 2px solid #dee2e6; }
         .tab-select-wrap { display: none; position: relative; }
-        .tab-select { width: 100%; padding: 11px 16px 11px 14px; font-size: 15px; font-weight: 600; color: #007bff; background: #fff; border: 2px solid #007bff; border-radius: 8px; cursor: pointer; }
+        .tab-select-wrap::after { content: "▼"; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #007bff; font-size: 12px; }
+        .tab-select { width: 100%; padding: 11px 40px 11px 14px; font-size: 15px; font-weight: 600; color: #007bff; background: #fff; border: 2px solid #007bff; border-radius: 8px; cursor: pointer; -webkit-appearance: none; appearance: none; }
         .tab-btn { padding: 12px 25px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #eee; border-radius: 8px 8px 0 0; font-weight: bold; }
         .tab-btn.active { background: #fff; color: #007bff; border-bottom: 3px solid #fff; position: relative; top: 2px; }
         .tab-content { display: none; }
