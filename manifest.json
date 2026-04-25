@@ -4,7 +4,7 @@
   "start_url": "/Puppy-papa/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/Puppy-papa/pwa-icon-v2.png",
