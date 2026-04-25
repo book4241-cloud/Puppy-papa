@@ -63,9 +63,9 @@
             .lipidol-results { grid-template-columns: 1fr 1fr !important; }
             .lipidol-results .res-card { grid-column: auto !important; }
             .lipidol-results .res-card:first-child { grid-column: 1 / span 2 !important; }
-            /* Oil/ME 카드 - 가운데 정렬 + 폰트 축소 */
-            .lipidol-results .res-card h4 { text-align: center !important; font-size: 0.8em !important; margin-bottom: 6px !important; }
-            .lipidol-results .res-card .res-val { font-size: 1.4em !important; text-align: center !important; }
+            /* Oil/ME 카드 - 가운데 정렬 */
+            .lipidol-results .res-card h4 { text-align: center !important; }
+            .lipidol-results .res-card .res-val { text-align: center !important; }
 
             /* Chart: allow horizontal scroll if needed */
             #chartContainer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -835,27 +835,27 @@
                 </div>
 
                 <div class="table-area">
-                    <table style="text-align: right; width: 100%;">
+                    <table style="text-align: center; width: 100%;">
                         <thead style="background-color: #f8fafc;">
                             <tr>
-                                <th style="text-align: left; background-color: #eef; color: #333;">Formula Adjustment</th>
-                                <th style="text-align: right; background-color: #eef; color: #333;">Qty (kg/MT)</th>
-                                <th style="text-align: right; background-color: #eef; color: #333;">Cost Effect (<span class="curr-label">USD</span>/MT)</th>
+                                <th style="text-align: center; background-color: #eef; color: #333;">Formula Adjustment</th>
+                                <th style="text-align: center; background-color: #eef; color: #333;">Qty (kg/MT)</th>
+                                <th style="text-align: center; background-color: #eef; color: #333;">Cost Effect (<span class="curr-label">USD</span>/MT)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="text-align: left; font-weight: bold; color: #333;">Oil Removed</td>
+                                <td style="text-align: center; font-weight: bold; color: #333;">Oil Removed</td>
                                 <td><span id="lipidolOilQty">0.00</span></td>
                                 <td style="color: #0056b3; font-weight: bold;">+ <span id="lipidolOilSaving">0.0</span></td>
                             </tr>
                             <tr>
-                                <td style="text-align: left; font-weight: bold; color: #333;">Lipidol Added</td>
+                                <td style="text-align: center; font-weight: bold; color: #333;">Lipidol Added</td>
                                 <td><span id="lipidolQtyOut">0.00</span></td>
                                 <td style="color: #d32f2f; font-weight: bold;">- <span id="lipidolCost">0.0</span></td>
                             </tr>
                             <tr>
-                                <td style="text-align: left; font-weight: bold; color: #333;">Filler (Corn) Added</td>
+                                <td style="text-align: center; font-weight: bold; color: #333;">Filler (Corn) Added</td>
                                 <td><span id="lipidolFillerQty">0.00</span></td>
                                 <td style="color: #d32f2f; font-weight: bold;">- <span id="lipidolFillerCost">0.0</span></td>
                             </tr>
