@@ -164,7 +164,232 @@
 .rec-action-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
 .copied-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 24px;border-radius:8px;font-size:.88em;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
 .copied-toast.show{opacity:1;}
-    </style>
+    
+  /* ── Lipidol Report (Tab 5) ── */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  
+  
+  
+    /* Header */
+  #tab5 .hdr { background: var(--text); padding: 18px 36px; display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden; }
+  #tab5 .hdr-logo { width: 34px; height: 34px; background: var(--green-mid); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; color: white; }
+  #tab5 .hdr h1 { font-size: 15px; font-weight: 500; color: white; }
+  #tab5 .hdr span { font-size: 12px; color: #777; display: block; margin-top: 1px; }
+  
+  #tab5 .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 60px; }
+  
+    /* Section heading */
+  #tab5 .sec-head { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
+  #tab5 .sec-head::after { content:''; flex:1; height:1px; background:var(--border); }
+  
+    /* Card */
+  #tab5 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; box-shadow: var(--shadow); }
+  #tab5 .card + .card { margin-top: 16px; }
+  
+    /* Grid */
+  #tab5 .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #tab5 .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  #tab5 .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  
+    /* Field */
+  #tab5 .fld { margin-bottom: 10px; }
+  #tab5 .fld:last-child { margin-bottom: 0; }
+  #tab5 .fld label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 3px; }
+  #tab5 .inp-wrap { position: relative; }
+  #tab5 .inp-wrap input { width: 100%; padding: 7px 38px 7px 10px; border: 1px solid var(--border); border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); background: var(--bg); transition: border-color 0.15s, box-shadow 0.15s; -moz-appearance: textfield; }
+  #tab5 .inp-wrap input::-webkit-outer-spin-button,
+  #tab5 .inp-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  #tab5 .inp-wrap input:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(39,158,106,0.1); background: white; }
+  #tab5 .inp-wrap .u { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: 10px; color: var(--muted); pointer-events: none; font-family: 'JetBrains Mono', monospace; }
+  #tab5 .fld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  #tab5 .fld-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  
+    /* Ingredient block title */
+  #tab5 .blk-title { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  
+    /* Scenario cards */
+  #tab5 .sc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 4px; }
+  #tab5 .sc-card { border-radius: var(--r); padding: 16px; border: 1px solid var(--border); background: var(--bg); }
+  #tab5 .sc-title { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  #tab5 .sc-title.a { color: var(--green); }
+  #tab5 .sc-title.b { color: var(--amber); }
+  #tab5 .sc-title.c { color: var(--red); }
+  
+  #tab5 .auto-block { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  #tab5 .auto-row { display: flex; justify-content: space-between; align-items: baseline; }
+  #tab5 .auto-lbl { font-size: 11px; color: var(--muted); }
+  #tab5 .auto-val { font-size: 12px; font-weight: 500; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+  
+    /* Generate button */
+  #tab5 .btn-gen { width: 100%; padding: 14px; background: var(--text); color: white; border: none; border-radius: var(--r); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 20px; letter-spacing: 0.01em; transition: opacity 0.15s, transform 0.1s; }
+  #tab5 .btn-gen:hover { opacity: 0.88; }
+  #tab5 .btn-gen:active { transform: scale(0.995); }
+  
+    /* ── REPORT ── */
+  #tab5 #report { display: none; margin-top: 40px; }
+  
+  #tab5 .rpt-hdr { background: var(--text); border-radius: var(--r); padding: 24px 28px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  #tab5 .rpt-hdr h2 { font-size: 19px; font-weight: 500; color: white; letter-spacing: -0.02em; margin-bottom: 3px; }
+  #tab5 .rpt-hdr p { font-size: 11px; color: #777; }
+  #tab5 .btn-print { padding: 9px 18px; background: var(--green); color: white; border: none; border-radius: 7px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; }
+  #tab5 .btn-print:hover { background: var(--green-mid); }
+  
+    /* Tables */
+  #tab5 table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  #tab5 th { background: var(--text); color: white; padding: 9px 13px; text-align: left; font-weight: 500; font-size: 11px; }
+  #tab5 th:first-child { border-radius: 8px 0 0 0; }
+  #tab5 th:last-child { border-radius: 0 8px 0 0; }
+  #tab5 td { padding: 9px 13px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  #tab5 tr:last-child td { border-bottom: none; }
+  #tab5 tr:nth-child(even) td { background: var(--bg); }
+  #tab5 .td-lbl { font-weight: 500; color: var(--muted); font-size: 11.5px; }
+  
+  #tab5 .badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  #tab5 .b-green { background: var(--green-light); color: var(--green); }
+  #tab5 .b-amber { background: var(--amber-light); color: var(--amber); }
+  
+    /* Note boxes */
+  #tab5 .note { border-radius: 8px; padding: 11px 14px; font-size: 12px; margin-top: 12px; line-height: 1.65; }
+  #tab5 .note.green { background: var(--green-light); color: var(--green); border-left: 3px solid var(--green-mid); }
+  #tab5 .note.amber { background: var(--amber-light); color: var(--amber); border-left: 3px solid var(--amber); }
+  #tab5 .note.neutral { background: var(--bg); color: var(--muted); border: 1px solid var(--border); border-left: 3px solid #CCC; }
+  #tab5 .note.red { background: #FFF7F0; color: #7A4010; border: 1px solid #F0D0B0; border-left: 3px solid var(--amber); font-style: italic; }
+  
+    /* Cost boxes */
+  #tab5 .cost-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px; }
+  #tab5 .cbox { border-radius: var(--r); padding: 16px 14px; text-align: center; }
+  #tab5 .cbox.a { background: var(--green-light); }
+  #tab5 .cbox.b { background: var(--amber-light); }
+  #tab5 .cbox.c { background: var(--red-light); }
+  #tab5 .cbox .clbl { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 5px; }
+  #tab5 .cbox.a .clbl { color: var(--green); }
+  #tab5 .cbox.b .clbl { color: var(--amber); }
+  #tab5 .cbox.c .clbl { color: var(--red); }
+  #tab5 .cbox .cval { font-size: 20px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  #tab5 .cbox.a .cval { color: var(--green); }
+  #tab5 .cbox.b .cval { color: var(--amber); }
+  #tab5 .cbox.c .cval { color: var(--red); }
+  #tab5 .cbox .csub { font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+  
+  #tab5 .eff-bar { background: var(--text); color: white; border-radius: var(--r); padding: 14px 18px; margin-top: 14px; display: flex; align-items: center; gap: 14px; }
+  #tab5 .eff-bar .et { font-size: 10px; color: #888; white-space: nowrap; }
+  #tab5 .eff-bar .ee { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; }
+  
+    /* Rec */
+  #tab5 .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  #tab5 .rec-box { border-radius: var(--r); padding: 16px; border: 1px solid var(--border); }
+  #tab5 .rec-box h4 { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 7px; }
+  #tab5 .rec-box p { font-size: 12px; color: var(--muted); line-height: 1.65; }
+  #tab5 .rec-box .reff { font-size: 12px; font-weight: 600; margin-top: 8px; font-family: 'JetBrains Mono', monospace; }
+  
+    /* Disclaimer */
+  #tab5 .disclaimer { margin-top: 20px; border-radius: var(--r); padding: 14px 18px; background: #F5F3EE; border: 1px solid var(--border); font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+  #tab5 .disclaimer strong { color: var(--text); }
+  
+    @media print {
+    #tab5 body { background: white; }
+    #tab5 .hdr,
+    #tab5 .wrap > .sec-head,
+    #tab5 .card:not(#report .card),
+    #tab5 .btn-gen,
+    #tab5 .btn-print { display: none !important; }
+    #tab5 #report { display: block !important; margin: 0; }
+    #tab5 .rpt-hdr { border-radius: 0; }
+    }
+  
+    /* ── RESPONSIVE — Tablet ── */
+    @media (max-width: 900px) {
+    #tab5 .g4 { grid-template-columns: 1fr 1fr; }
+    #tab5 .hdr { padding: 14px 20px; }
+    #tab5 .wrap { padding: 20px 16px 48px; }
+    }
+  
+    /* ── RESPONSIVE — Mobile (iPhone 16: 393px) ── */
+    @media (max-width: 640px) {
+    #tab5 body { font-size: 13px; }
+  
+      /* Header */
+    #tab5 .hdr { padding: 12px 14px; gap: 10px; flex-wrap: wrap; }
+    #tab5 .hdr h1 { font-size: 13px; }
+    #tab5 .hdr span { font-size: 11px; }
+    #tab5 .hdr-logo { width: 30px; height: 30px; font-size: 13px; }
+  
+      /* Layout */
+    #tab5 .wrap { padding: 12px 10px 36px; }
+    #tab5 .card { padding: 14px 12px; }
+  
+      /* Collapse multi-column grids to single column */
+      .g2, .g3,
+      .fld-row, .fld-row3,
+    #tab5 .sc-grid,
+    #tab5 .cost-row,
+    #tab5 .rec-grid { grid-template-columns: 1fr !important; }
+  
+      /* Ingredient: keep 2-col, top-align so unequal heights don't create gaps */
+    #tab5 .g4 { grid-template-columns: 1fr 1fr !important; align-items: start; }
+  
+      /* Reorder blocks so similar-height blocks share a row:
+         Row 1: Full Fat Soya (4 fields) | Lipidol+General (3 fields)
+         Row 2: Soybean Oil (2 fields)   | Soybean Meal (1 field)       */
+    #tab5 .g4 > div:nth-child(1) { order: 1; }
+    #tab5 .g4 > div:nth-child(2) { order: 3; }
+    #tab5 .g4 > div:nth-child(3) { order: 4; }
+    #tab5 .g4 > div:nth-child(4) { order: 2; }
+      /* Scenario cards: side-by-side labels stay legible */
+    #tab5 .sc-card { padding: 12px 10px; }
+    #tab5 .sc-title { font-size: 11px; margin-bottom: 10px; }
+  
+      /* Inputs: larger touch target */
+    #tab5 .inp-wrap input {
+        padding: 11px 40px 11px 11px;
+        font-size: 15px;
+        border-radius: 8px;
+      }
+    #tab5 .inp-wrap .u { font-size: 11px; right: 10px; }
+    #tab5 .fld label { font-size: 12px; margin-bottom: 4px; }
+    #tab5 .fld { margin-bottom: 12px; }
+  
+      /* Block title */
+    #tab5 .blk-title { font-size: 12px; }
+  
+      /* Report header: stack vertically */
+    #tab5 .rpt-hdr { padding: 16px 14px; flex-direction: column; align-items: flex-start; gap: 10px; }
+    #tab5 .rpt-hdr h2 { font-size: 16px; }
+    #tab5 .btn-print { width: 100%; text-align: center; padding: 10px; }
+  
+      /* Tables: horizontal scroll */
+    #tab5 #tbl-baseline,
+    #tab5 #tbl-scenario {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+      }
+    #tab5 table { font-size: 11.5px; }
+    #tab5 th,
+    #tab5 td { padding: 8px 10px; }
+  
+      /* Cost boxes */
+    #tab5 .cbox .cval { font-size: 18px; }
+  
+      /* Efficiency bar */
+    #tab5 .eff-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 14px; }
+  
+      /* Generate button */
+    #tab5 .btn-gen { font-size: 15px; padding: 16px; margin-top: 16px; }
+  
+      /* Right-aligned version info in header */
+    #tab5 .hdr > div:last-child { margin-left: auto; }
+  
+      /* auto-row: prevent text from being squeezed */
+    #tab5 .auto-lbl { font-size: 11.5px; }
+    #tab5 .auto-val { font-size: 12.5px; }
+  
+      /* Summary note boxes */
+    #tab5 .note { font-size: 12.5px; }
+    #tab5 .disclaimer { font-size: 11.5px; padding: 12px 12px; }
+    }
+</style>
 </head>
 <body>
 <div class="container">
@@ -184,6 +409,7 @@
         <div class="tab-btn" onclick="moveTab(2)">ProBe-Bac WE Action Plan</div>
         <div class="tab-btn" onclick="moveTab(3)">Lipidol Cost Saving</div>
         <div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
+        <div class="tab-btn" onclick="moveTab(5)">Lipidol Report</div>
     </div>
 
     <div id="tab0" class="tab-content active">
@@ -463,6 +689,154 @@
             
         </div>
     </div>
+
+
+<div id="tab5" class="tab-content">
+  <div style="padding:8px 0 16px; border-bottom:1px solid #e4ecf7; margin-bottom:16px;">
+    <span style="font-size:0.95em; font-weight:700; color:#2d6cdf;">Lipidol Report Generator</span>
+    <span style="font-size:0.75em; color:#b8c2d0; margin-left:10px;">Pathway Intermediates · Feed Additive Division</span>
+  </div>
+<div class="wrap">
+
+  <!-- ① Ingredient Info -->
+  <div class="sec-head" style="margin-top:4px">Ingredient Information</div>
+  <div class="card">
+    <div class="g4">
+
+      <!-- FFS -->
+      <div>
+        <div class="blk-title">Full Fat Soya</div>
+        <div class="fld"><label>Inclusion</label><div class="inp-wrap"><input type="text" id="ffs_kg" value="120" oninput="lr_autoCalc()"><span class="u">kg</span></div></div>
+        <div class="fld"><label>Crude Fat (EE)</label><div class="inp-wrap"><input type="text" id="ffs_cf" value="17"><span class="u">%</span></div></div>
+        <div class="fld"><label>Crude Protein</label><div class="inp-wrap"><input type="text" id="ffs_cp" value="38.13"><span class="u">%</span></div></div>
+        <div class="fld"><label>AME</label><div class="inp-wrap"><input type="text" id="ffs_ame" value="3,200" oninput="lr_autoCalc()"><span class="u">kcal/kg</span></div></div>
+      </div>
+
+      <!-- SYO -->
+      <div>
+        <div class="blk-title">Soybean Oil</div>
+        <div class="fld"><label>Inclusion</label><div class="inp-wrap"><input type="text" id="syo_l" value="14" oninput="lr_autoCalc()"><span class="u">L</span></div></div>
+        <div class="fld"><label>AME</label><div class="inp-wrap"><input type="text" id="syo_ame" value="8,000" oninput="lr_autoCalc()"><span class="u">kcal/kg</span></div></div>
+      </div>
+
+      <!-- SBM -->
+      <div>
+        <div class="blk-title">Soybean Meal</div>
+        <div class="fld"><label>Crude Protein</label><div class="inp-wrap"><input type="text" id="sbm_cp" value="46.28"><span class="u">%</span></div></div>
+      </div>
+
+      <!-- Lipidol + Basis -->
+      <div>
+        <div class="blk-title">Lipidol</div>
+        <div class="fld"><label>AME</label><div class="inp-wrap"><input type="text" id="lip_ame" value="100,000" oninput="lr_autoCalc()"><span class="u">kcal/kg</span></div></div>
+        <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border)">
+          <div class="blk-title">General</div>
+          <div class="fld"><label>Diet Basis</label><div class="inp-wrap"><input type="text" id="diet_basis" value="1,000" oninput="lr_autoCalc()"><span class="u">kg</span></div></div>
+          <div class="fld"><label>Species / Breed</label><input type="text" id="species" value="Broiler (Ross 308)" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;background:var(--bg);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ② Scenarios -->
+  <div class="sec-head" style="margin-top:24px">Scenario Settings</div>
+  <div class="card">
+    <div class="sc-grid">
+
+      <!-- A -->
+      <div class="sc-card">
+        <div class="sc-title a" style="text-align:center">A : Full Fat Soya<br>Reduction Only</div>
+        <div class="fld">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <label style="margin:0">Lipidol Inclusion</label>
+            <span id="sa_mv_badge" style="font-size:10px;font-weight:600;color:var(--green);font-family:'JetBrains Mono',monospace;">M.V —</span>
+          </div>
+          <div class="inp-wrap"><input type="text" id="sa_lip" value="500" oninput="lr_autoCalc()"><span class="u">g</span></div>
+        </div>
+        <div class="auto-block">
+          <div class="auto-row"><span class="auto-lbl">Full Fat Soya Reducible</span><span class="auto-val" id="sa_syo_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Fat (%) — Estimated</span><span class="auto-val" id="sa_cf_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sa_cp_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sa_sbm_auto">—</span></div>
+        </div>
+        <div id="sum-a"></div>
+      </div>
+
+      <!-- B -->
+      <div class="sc-card">
+        <div class="sc-title b" style="text-align:center">B : Soybean Oil<br>Reduction Only</div>
+        <div class="fld">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <label style="margin:0">Lipidol Inclusion</label>
+            <span id="sb_mv_badge" style="font-size:10px;font-weight:600;color:var(--amber);font-family:'JetBrains Mono',monospace;">M.V —</span>
+          </div>
+          <div class="inp-wrap"><input type="text" id="sb_lip" value="500" oninput="lr_autoCalc()"><span class="u">g</span></div>
+        </div>
+        <div class="auto-block">
+          <div class="auto-row"><span class="auto-lbl">Full Fat Soya Reducible</span><span class="auto-val" id="sb_ffs_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Fat (%) — Estimated</span><span class="auto-val" id="sb_cf_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sb_cp_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sb_sbm_auto">—</span></div>
+        </div>
+        <div id="sum-b"></div>
+      </div>
+
+      <!-- C -->
+      <div class="sc-card">
+        <div class="sc-title c" style="text-align:center">C : Both<br>Full Fat Soya + Soybean Oil</div>
+        <div class="fld">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <label style="margin:0">Lipidol Inclusion</label>
+            <span id="sc_mv_badge" style="font-size:10px;font-weight:600;color:var(--red);font-family:'JetBrains Mono',monospace;">M.V —</span>
+          </div>
+          <div class="inp-wrap"><input type="text" id="sc_lip" value="1,000" oninput="lr_autoCalc()"><span class="u">g</span></div>
+        </div>
+        <div class="fld"><label>Soybean Oil Reduction (set)</label><div class="inp-wrap"><input type="text" id="sc_syo_set" value="2" oninput="lr_autoCalc()"><span class="u">L</span></div></div>
+        <div class="auto-block">
+          <div class="auto-row"><span class="auto-lbl">Full Fat Soya Reducible (auto)</span><span class="auto-val" id="sc_ffs_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Fat (%) — Estimated</span><span class="auto-val" id="sc_cf_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Crude Protein Loss</span><span class="auto-val" id="sc_cp_auto">—</span></div>
+          <div class="auto-row"><span class="auto-lbl">Soybean Meal Needed</span><span class="auto-val" id="sc_sbm_auto">—</span></div>
+        </div>
+        <div id="sum-c"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <button class="btn-gen" onclick="lr_generateReport()">Generate Report →</button>
+
+  <!-- ── REPORT ── -->
+  <div id="report">
+    <div class="rpt-hdr">
+      <div>
+        <h2>Lipidol Application Review</h2>
+        <p id="rpt-sub"></p>
+      </div>
+      <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <!-- S1 -->
+    <div class="card">
+      <div class="sec-head">1. Baseline — Current Diet Ingredient Overview</div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table id="tbl-baseline"></table></div>
+    </div>
+
+    <!-- S2 -->
+    <div class="card" style="margin-top:16px">
+      <div class="sec-head">2. Scenario Comparison — Lipidol Application with Ingredient Adjustment</div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table id="tbl-scenario"></table></div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> The values and recommendations presented in this report are estimates based on the ingredient data provided and general nutritional reference values. Actual results may vary depending on local raw material conditions, ingredient quality, regional environment, and on-farm management practices. This report is intended for reference purposes only and should not be used as the sole basis for feed formulation decisions. Please consult a qualified nutritionist for final formulation advice.
+    </div>
+
+  </div>
+</div>
+</div>
 
 <!-- Background watermark (bottom-right of container) -->
 <div style="position:absolute; bottom:10px; right:10px; opacity:0.07; pointer-events:none; user-select:none; z-index:0;">
@@ -1394,6 +1768,231 @@ calcLipidol();
 
 calcPB();
 renderWiz();
+
+/* ── Lipidol Report JS ── */
+const SYO_D = 0.92;
+function lr_v(id){ return parseFloat(document.getElementById(id).value.replace(/,/g,''))||0; }
+function lr_fmt(n,d=2){ return Number(n).toFixed(d); }
+function lr_fmtK(n){ return Math.round(n).toLocaleString(); }
+
+// Format value with commas, preserve decimals
+function lr_applyComma(val){
+  const s = val.replace(/,/g,'');
+  const num = parseFloat(s);
+  if(isNaN(num)) return val;
+  const parts = s.split('.');
+  const int = parseInt(parts[0]).toLocaleString();
+  return parts.length>1 ? int+'.'+parts[1] : int;
+}
+
+function lr_setupCommaInput(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  // Format on blur only — don't touch during typing
+  el.addEventListener('blur', function(){
+    this.value = lr_applyComma(this.value);
+  });
+  // On focus: just select all, don't clear
+  el.addEventListener('focus', function(){
+    this.select();
+  });
+}
+
+function lr_calc(){
+  const ffs_kg=lr_v('ffs_kg'), ffs_cf=lr_v('ffs_cf'), ffs_cp=lr_v('ffs_cp'), ffs_ame=lr_v('ffs_ame');
+  const syo_l=lr_v('syo_l'), syo_ame=lr_v('syo_ame');
+  const sbm_cp=lr_v('sbm_cp');
+  const lip_ame=lr_v('lip_ame');
+  const diet=lr_v('diet_basis');
+  const syo_kg=syo_l*SYO_D;
+  const base_cf=ffs_kg*ffs_cf/100+syo_kg;
+
+  // A: FFS reduction
+  const sa_lip=lr_v('sa_lip')/1000;
+  const sa_lip_ene=sa_lip*lip_ame;
+  const sa_ffs_red=Math.min(sa_lip_ene/ffs_ame, ffs_kg);
+  const sa_cf_loss=sa_ffs_red*ffs_cf/100;
+  const sa_cp_loss=sa_ffs_red*ffs_cp/100;
+  const sa_sbm=sa_cp_loss/(sbm_cp/100);
+
+  // B: SYO reduction
+  const sb_lip=lr_v('sb_lip')/1000;
+  const sb_lip_ene=sb_lip*lip_ame;
+  const sb_syo_red_l=Math.min(sb_lip_ene/(syo_ame*SYO_D), syo_l);
+  const sb_cf_loss=sb_syo_red_l*SYO_D;
+  const sb_cp_loss=0;
+
+  // C: Both
+  const sc_lip=lr_v('sc_lip')/1000;
+  const sc_lip_ene=sc_lip*lip_ame;
+  const sc_syo_set=Math.min(lr_v('sc_syo_set'), syo_l);
+  const sc_syo_ene=sc_syo_set*SYO_D*syo_ame;
+  const sc_ffs_red=Math.min(Math.max(0,(sc_lip_ene-sc_syo_ene)/ffs_ame), ffs_kg);
+  const sc_cf_loss=sc_ffs_red*ffs_cf/100+sc_syo_set*SYO_D;
+  const sc_cp_loss=sc_ffs_red*ffs_cp/100;
+  const sc_sbm=sc_cp_loss/(sbm_cp/100);
+
+  return {
+    ffs_kg,ffs_cf,ffs_cp,ffs_ame,
+    syo_l,syo_kg,syo_ame,
+    sbm_cp,lip_ame,diet,
+    base_cf, base_cf_pct:base_cf/diet*100,
+    sa:{lip:lr_v('sa_lip'), ffs_red:sa_ffs_red, cf_loss:sa_cf_loss, cp_loss:sa_cp_loss, sbm:sa_sbm, cf_pct:(base_cf-sa_cf_loss)/diet*100},
+    sb:{lip:lr_v('sb_lip'), syo_red_l:sb_syo_red_l, cf_loss:sb_cf_loss, cp_loss:sb_cp_loss, cf_pct:(base_cf-sb_cf_loss)/diet*100},
+    sc:{lip:lr_v('sc_lip'), syo_set:sc_syo_set, ffs_red:sc_ffs_red, cf_loss:sc_cf_loss, cp_loss:sc_cp_loss, sbm:sc_sbm, cf_pct:(base_cf-sc_cf_loss)/diet*100}
+  };
+}
+
+function lr_autoCalc(){
+  const d=lr_calc(); const {sa,sb,sc,diet,lip_ame}=d;
+  const base_pct=d.base_cf_pct;
+
+  const sa_mv_kg=(lr_v('sa_lip')/1000*lip_ame)/diet;
+  const sb_mv_kg=(lr_v('sb_lip')/1000*lip_ame)/diet;
+  const sc_mv_kg=(lr_v('sc_lip')/1000*lip_ame)/diet;
+
+  document.getElementById('sa_mv_badge').textContent=`+${lr_fmt(sa_mv_kg,1)} kcal/kg`;
+  document.getElementById('sb_mv_badge').textContent=`+${lr_fmt(sb_mv_kg,1)} kcal/kg`;
+  document.getElementById('sc_mv_badge').textContent=`+${lr_fmt(sc_mv_kg,1)} kcal/kg`;
+
+  // A: FFS
+  const sa_ffs_kcal=sa.ffs_red*d.ffs_ame;
+  document.getElementById('sa_syo_auto').textContent=`${lr_fmt(sa.ffs_red,2)} kg (−${lr_fmt(sa_ffs_kcal/diet,1)} kcal/kg)`;
+  document.getElementById('sa_cf_auto').textContent=`${lr_fmt(base_pct,2)}% → ${lr_fmt(sa.cf_pct,2)}% (−${lr_fmt(base_pct-sa.cf_pct,2)}%p)`;
+  document.getElementById('sa_cp_auto').textContent=`−${lr_fmt(sa.cp_loss,2)} kg`;
+  document.getElementById('sa_sbm_auto').textContent=`~${lr_fmt(sa.sbm,1)} kg`;
+
+  // B: SYO
+  const sb_syo_kcal=sb.syo_red_l*0.92*d.syo_ame;
+  document.getElementById('sb_ffs_auto').textContent=`${lr_fmt(sb.syo_red_l,2)} L (−${lr_fmt(sb_syo_kcal/diet,1)} kcal/kg)`;
+  document.getElementById('sb_cf_auto').textContent=`${lr_fmt(base_pct,2)}% → ${lr_fmt(sb.cf_pct,2)}% (−${lr_fmt(base_pct-sb.cf_pct,2)}%p)`;
+  document.getElementById('sb_cp_auto').textContent='None';
+
+  // C
+  const sc_ffs_kcal=sc.ffs_red*d.ffs_ame;
+  document.getElementById('sc_ffs_auto').textContent=`${lr_fmt(sc.ffs_red,2)} kg (−${lr_fmt(sc_ffs_kcal/diet,1)} kcal/kg)`;
+  document.getElementById('sc_cf_auto').textContent=`${lr_fmt(base_pct,2)}% → ${lr_fmt(sc.cf_pct,2)}% (−${lr_fmt(base_pct-sc.cf_pct,2)}%p)`;
+  document.getElementById('sc_cp_auto').textContent=`−${lr_fmt(sc.cp_loss,2)} kg`;
+  document.getElementById('sc_sbm_auto').textContent=`~${lr_fmt(sc.sbm,1)} kg`;
+
+  // Summary boxes
+  lr_renderSummary(d);
+}
+
+function lr_renderSummary(d){
+  const {sa,sb,sc}=d;
+
+  function rows(items){
+    return items.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px;font-weight:700;color:${r.sign==='+' ? '#1A6B47':'#B03020'};width:16px;flex-shrink:0;">${r.sign}</span>
+      <span style="color:var(--muted);flex:1;">${r.label}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-weight:500;">${r.val}</span>
+    </div>`).join('');
+  }
+
+  function injectBox(id, color, items){
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=`<div style="margin-top:12px;border-top:2px solid ${color};padding-top:10px;font-size:12px;">${rows(items)}</div>`;
+  }
+
+  injectBox('sum-a','#1A6B47',[
+    {sign:'−',label:'Full Fat Soya',val:`${lr_fmt(sa.ffs_red,1)} kg`},
+    {sign:'+',label:'Lipidol',val:`${lr_fmtK(lr_v('sa_lip'))} g`},
+    {sign:'+',label:'Soybean Meal',val:`~${lr_fmt(sa.sbm,1)} kg`},
+    {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
+  ]);
+  injectBox('sum-b','#A85500',[
+    {sign:'−',label:'Soybean Oil',val:`${lr_fmt(sb.syo_red_l,2)} L`},
+    {sign:'+',label:'Lipidol',val:`${lr_fmtK(lr_v('sb_lip'))} g`},
+  ]);
+  injectBox('sum-c','#B03020',[
+    {sign:'−',label:'Full Fat Soya',val:`${lr_fmt(sc.ffs_red,1)} kg`},
+    {sign:'−',label:'Soybean Oil',val:`${lr_fmt(sc.syo_set,1)} L`},
+    {sign:'+',label:'Lipidol',val:`${lr_fmtK(lr_v('sc_lip'))} g`},
+    {sign:'+',label:'Soybean Meal',val:`~${lr_fmt(sc.sbm,1)} kg`},
+    {sign:'+',label:'Synthetic Lys / Met',val:'as needed'},
+  ]);
+}
+
+function lr_generateReport(){
+  const d=lr_calc(); const {sa,sb,sc,ffs_kg,ffs_cf,ffs_cp,ffs_ame,syo_l,syo_kg,syo_ame,lip_ame,diet,base_cf,base_cf_pct}=d;
+  const sp=document.getElementById('species').value;
+
+  document.getElementById('rpt-sub').textContent=`${sp} · ${lr_fmtK(diet)} kg diet basis · Pathway Intermediates`;
+
+  document.getElementById('tbl-baseline').innerHTML=`
+    <thead><tr><th style="width:28%">Item</th><th>Full Fat Soya</th><th>Soybean Oil</th><th>Lipidol</th></tr></thead>
+    <tbody>
+      <tr><td class="td-lbl">Inclusion (per ton)</td><td>${lr_fmtK(ffs_kg)} kg (${lr_fmt(ffs_kg/diet*100,1)}%)</td><td>${lr_fmt(syo_l,1)} L (${lr_fmt(syo_l/diet*100,1)}%)</td><td>—</td></tr>
+      <tr><td class="td-lbl">Energy (AME)</td><td>~${lr_fmtK(ffs_ame)} kcal/kg</td><td>${lr_fmtK(syo_ame)} kcal/kg</td><td>${lr_fmtK(lip_ame)} kcal/kg</td></tr>
+      <tr><td class="td-lbl">Crude Fat (Ether Extract)</td><td>${lr_fmt(ffs_cf,2)}% (customer data)</td><td>~100%</td><td>—</td></tr>
+      <tr><td class="td-lbl">Crude Protein</td><td>${lr_fmt(ffs_cp,2)}%</td><td>—</td><td>—</td></tr>
+      <tr><td class="td-lbl">Total Energy in Diet</td><td>${lr_fmtK(ffs_kg*ffs_ame)} kcal</td><td>${lr_fmtK(syo_kg*syo_ame)} kcal</td><td>—</td></tr>
+    </tbody>`;
+
+  document.getElementById('tbl-scenario').innerHTML=`
+    <thead><tr>
+      <th style="width:26%">Item</th>
+      <th style="color:#88DDBB">A : Full Fat Soya</th>
+      <th style="color:#FFD980">B : Soybean Oil</th>
+      <th style="color:#FFAAAA">C : Both</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td class="td-lbl">Full Fat Soya</td>
+        <td>${lr_fmtK(ffs_kg)} → ${lr_fmt(ffs_kg-sa.ffs_red,1)} kg (−${lr_fmt(sa.ffs_red,1)} kg)</td>
+        <td>${lr_fmtK(ffs_kg)} kg (unchanged)</td>
+        <td>${lr_fmtK(ffs_kg)} → ${lr_fmt(ffs_kg-sc.ffs_red,1)} kg (−${lr_fmt(sc.ffs_red,1)} kg)</td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Soybean Oil</td>
+        <td>${lr_fmt(syo_l,1)} L (unchanged)</td>
+        <td>${lr_fmt(syo_l,1)} → ${lr_fmt(syo_l-sb.syo_red_l,2)} L (−${lr_fmt(sb.syo_red_l,2)} L)</td>
+        <td>${lr_fmt(syo_l,1)} → ${lr_fmt(syo_l-sc.syo_set,1)} L (−${lr_fmt(sc.syo_set,1)} L)</td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Lipidol Inclusion</td>
+        <td><span class="badge b-green">${lr_fmtK(sa.lip)} g</span></td>
+        <td><span class="badge b-green">${lr_fmtK(sb.lip)} g</span></td>
+        <td><span class="badge b-amber">${lr_fmtK(sc.lip)} g</span></td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Crude Fat Loss (per ton)</td>
+        <td>${lr_fmt(sa.cf_loss,2)} kg (−${lr_fmt(base_cf_pct-sa.cf_pct,2)}%p)</td>
+        <td>${lr_fmt(sb.cf_loss,2)} kg (−${lr_fmt(base_cf_pct-sb.cf_pct,2)}%p)</td>
+        <td>${lr_fmt(sc.cf_loss,2)} kg (−${lr_fmt(base_cf_pct-sc.cf_pct,2)}%p)</td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Fat (%) — Estimated</td>
+        <td>${lr_fmt(base_cf_pct,2)}% → ~${lr_fmt(sa.cf_pct,2)}%</td>
+        <td>${lr_fmt(base_cf_pct,2)}% → ~${lr_fmt(sb.cf_pct,2)}%</td>
+        <td>${lr_fmt(base_cf_pct,2)}% → ~${lr_fmt(sc.cf_pct,2)}%</td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Crude Protein Loss (per ton)</td>
+        <td>${lr_fmt(sa.cp_loss,2)} kg</td>
+        <td>None</td>
+        <td>${lr_fmt(sc.cp_loss,2)} kg</td>
+      </tr>
+      <tr>
+        <td class="td-lbl">Soybean Meal Needed</td>
+        <td>~${lr_fmt(sa.sbm,1)} kg + Synthetic Lys / Met</td>
+        <td>—</td>
+        <td>~${lr_fmt(sc.sbm,1)} kg + Synthetic Lys / Met</td>
+      </tr>
+
+    </tbody>`;
+
+  document.getElementById('report').style.display='block';
+  document.getElementById('report').scrollIntoView({behavior:'smooth'});
+}
+
+window.onload=function(){
+  ['ffs_kg','ffs_ame','syo_l','syo_ame','lip_ame','diet_basis','sa_lip','sb_lip','sc_lip','sc_syo_set'].forEach(setupCommaInput);
+  lr_autoCalc();
+};
+
 </script>
 </body>
 </html>
