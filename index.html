@@ -32,24 +32,9 @@
             /* Header: logo stays, version wraps cleanly */
             .container > div:first-child { flex-wrap: wrap; gap: 8px; }
 
-            /* Tab bar: horizontal scroll, no wrapping */
-            .tab-bar {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                flex-wrap: nowrap;
-                scrollbar-width: none;
-                gap: 3px;
-                padding-bottom: 1px;
-                margin-bottom: 8px;
-            }
-            .tab-bar::-webkit-scrollbar { display: none; }
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 11.5px;
-                white-space: nowrap;
-                flex-shrink: 0;
-                border-radius: 6px 6px 0 0;
-            }
+            /* 탭바 숨기고 드롭다운으로 교체 */
+            .tab-bar { display: none !important; }
+            .tab-select-wrap { display: block; margin-bottom: 12px; }
 
             /* Inputs & selects: 16px prevents iOS auto-zoom */
             input[type="number"],
@@ -158,6 +143,8 @@
 
         /* Tabs */
         .tab-bar { display: flex; gap: 5px; margin-bottom: 10px; border-bottom: 2px solid #dee2e6; }
+        .tab-select-wrap { display: none; }
+        .tab-select { width: 100%; padding: 11px 14px; font-size: 15px; font-weight: 600; color: #007bff; background: #fff; border: 2px solid #007bff; border-radius: 8px; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23007bff' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 20px; cursor: pointer; }
         .tab-btn { padding: 12px 25px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #eee; border-radius: 8px 8px 0 0; font-weight: bold; }
         .tab-btn.active { background: #fff; color: #007bff; border-bottom: 3px solid #fff; position: relative; top: 2px; }
         .tab-content { display: none; }
@@ -532,6 +519,16 @@
         <div class="tab-btn" onclick="moveTab(3)">Lipidol Cost Saving</div>
         <div class="tab-btn" onclick="moveTab(4)">Product Wizard</div>
         <div class="tab-btn" onclick="moveTab(5)">Lipidol Report</div>
+    </div>
+    <div class="tab-select-wrap">
+        <select class="tab-select" onchange="moveTabSelect(this.value)">
+            <option value="0">Performance Dashboard</option>
+            <option value="1">Application Simulation</option>
+            <option value="2">ProBe-Bac WE Action Plan</option>
+            <option value="3">Lipidol Cost Saving</option>
+            <option value="4">Product Wizard</option>
+            <option value="5">Lipidol Report</option>
+        </select>
     </div>
 
     <div id="tab0" class="tab-content active">
@@ -1523,10 +1520,13 @@ function getVal(id, def = 0) {
 function moveTab(idx) {
     document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
     document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+    const sel = document.querySelector('.tab-select');
+    if (sel) sel.value = idx;
     if(idx === 1) calcSim();
     if(idx === 2) calcPB();
     if(idx === 3) calcLipidol();
 }
+function moveTabSelect(val) { moveTab(Number(val)); }
 
 function updateCurrency() {
     const curr = document.getElementById('currencyUnit').value || 'USD';
