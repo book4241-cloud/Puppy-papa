@@ -99,6 +99,51 @@
             [style*="grid-template-columns: 1fr 1fr 1fr"] {
                 grid-template-columns: 1fr !important;
             }
+
+            /* ── Fix 1: Scenario auto-row 좌우 정렬 (1번 사진) ── */
+            #tab5 .auto-row {
+                align-items: flex-start;
+                gap: 6px;
+            }
+            #tab5 .auto-lbl {
+                flex: 1;
+                font-size: 10.5px !important;
+                line-height: 1.35;
+                color: var(--muted);
+            }
+            #tab5 .auto-val {
+                flex-shrink: 0;
+                text-align: right;
+                font-size: 11px !important;
+                max-width: 48%;
+                word-break: break-word;
+            }
+            /* Summary rows (+/-) 정렬 */
+            #tab5 [style*="display:flex;align-items:center;gap:8px"] {
+                flex-wrap: nowrap;
+            }
+
+            /* ── Fix 2: Ingredient 블록 사이 점선 구분선 (2번 사진) ── */
+            #tab5 .g4 > div {
+                border: 1px dashed #d0d4dc;
+                border-radius: 8px;
+                padding: 10px 8px;
+            }
+
+            /* ── Fix 3: Product Wizard 제품카드 레이아웃 (3번 사진) ── */
+            .rec-product {
+                grid-template-columns: auto 52px 1fr !important;
+                gap: 8px !important;
+                padding: 14px 10px !important;
+            }
+            .rec-img { width: 48px !important; }
+            /* 제품 이미지 아래 캡션 숨김 (좁은 컬럼에서 줄글 방지) */
+            [style*="max-width:90px"] { display: none !important; }
+            /* 제품 설명 폰트 축소 */
+            .rec-reason { font-size: 12px !important; line-height: 1.5 !important; }
+            .rec-protocol p { font-size: 12px !important; }
+            .rec-protocol h5 { font-size: 11px !important; letter-spacing: 0.04em; }
+            .rec-name { font-size: 14px !important; }
         }
         .field-box { margin-bottom: 1px; }
         select, input[type="text"], input[type="number"] { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
